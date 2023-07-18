@@ -1,4 +1,4 @@
-package com.example.digitalhuman.Websocket;
+package com.icbc.digitalhuman.Websocket;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

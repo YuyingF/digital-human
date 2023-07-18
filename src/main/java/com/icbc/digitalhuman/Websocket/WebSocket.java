@@ -1,7 +1,5 @@
-package com.example.digitalhuman.Websocket;
+package com.icbc.digitalhuman.Websocket;
 
-import com.alibaba.fastjson.JSON;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -38,7 +36,7 @@ public class WebSocket {
      */
     @OnOpen
     public void onOpen(Session session) {
-        InetSocketAddress remoteAddress = com.example.digitalhuman.Websocket.WebSocketUtils.getRemoteAddress(session);
+        InetSocketAddress remoteAddress = WebSocketUtils.getRemoteAddress(session);
         System.out.println("有新的客户端连接了,ip为:"+remoteAddress+"ID为："+session.getId());
         //将新用户存入在线的组
         clients.put(session.getId(), session);
@@ -53,7 +51,7 @@ public class WebSocket {
      */
     @OnClose
     public void onClose(Session session) {
-        InetSocketAddress remoteAddress = com.example.digitalhuman.Websocket.WebSocketUtils.getRemoteAddress(session);
+        InetSocketAddress remoteAddress = WebSocketUtils.getRemoteAddress(session);
         System.out.println("有用户断开了, ip为:"+ remoteAddress);
         //将掉线的用户移除在线的组里
         clients.remove(session.getId());

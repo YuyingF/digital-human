@@ -1,4 +1,4 @@
-package com.example.digitalhuman.Websocket;
+package com.icbc.digitalhuman.Websocket;
 
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.Session;

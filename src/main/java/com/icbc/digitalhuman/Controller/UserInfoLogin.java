@@ -1,10 +1,10 @@
-package com.example.digitalhuman.controller;
+package com.icbc.digitalhuman.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class UserInfo_Login {
+public class UserInfoLogin {
     @RequestMapping ("/login")
     public String Get_User(String username,  String password) {
         System.out.println("有新的登录请求");
