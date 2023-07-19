@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class UnnecessaryInfo {
+    String id;
     // 处理存过接口
     String storedProcedureInterface;
     // 接口输入参数补充说明

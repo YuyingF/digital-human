@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class NecessaryInfo {
-    String id;
     // 接口输入参数
     String interfaceInputParameters;
     // 是否支持重跑
