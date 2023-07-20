@@ -95,7 +95,7 @@ public class Regex {
                         finalNecessaryInfo.setIsInterruptPossible(value);
                         break;
                     case "estimatedTimeInMinutes":
-                        finalNecessaryInfo.setEstimatedTimeInMinutes(Integer.parseInt(value));
+                        finalNecessaryInfo.setEstimatedTimeInMinutes(value);
                         break;
                     case "applicationType":
                         finalNecessaryInfo.setApplicationType(value);
