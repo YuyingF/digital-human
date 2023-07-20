@@ -8,8 +8,9 @@
             background-image: url("image/login2.jpeg");
             background-repeat: no-repeat;
             background-size: 100% 100%;
-            background-attachment: fixed;      /*图片铺满整个页面*/
+            background-attachment: fixed; /*图片铺满整个页面*/
         }
+
         .main {
             width: 500px;
             height: 300px;
@@ -23,22 +24,26 @@
             left: 0;
             margin: auto;
         }
+
         /*欢迎那几个字*/
         .main h2 {
             color: rgb(0, 0, 0);
             margin-left: 150px;
         }
+
         .form {
             margin-top: 30px;
             margin-left: 60px;
         }
+
         /*账号密码输入框*/
         .form input {
             width: 300px;
             height: 25px;
             border: 1px solid rgb(116, 115, 115);
-            outline: none;      
+            outline: none;
         }
+
         /*登录button*/
         .form button {
             width: 150px;
@@ -51,19 +56,59 @@
             margin-top: 30px;
             margin-left: 110px;
             outline: none;
-            cursor: pointer;    /*光标放到上面有小手*/
+            cursor: pointer; /*光标放到上面有小手*/
         }
     </style>
 </head>
 <body>
-    <div class="main">
-        <h2>欢迎访问工小妍系统</h2>
-        <form action="http://localhost:8080/login" tonmethod="get" class="form">
-            用户名: <input type="text", name="username"><!--输入的用户名保存到username变量，传回后端-->
-            <br> <br>   
-            密&nbsp;&thinsp;&thinsp; 码: <input type="password", name="password"><br>
-            <button type="submit">登录</button><br>
-        </form>
-    </div>
+<div class="main">
+    <h2>欢迎访问工小妍系统</h2>
+    <form action="http://localhost:8080/login" method="post" class="form" id="loginForm">
+        用户名: <input type="text" name="username" id="username"><!--输入的用户名保存到username变量，传回后端-->
+        <br> <br>
+        密　码: <input type="password" name="password" id="password"><br>
+        <span id="msg" style="font-size:12px;color:red"></span>
+        <button type="submit" id="loginButton">登录</button>
+        <br>
+    </form>
+</div>
 </body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script type="text/javascript">
+    $("#loginButton").click(function (event) {
+        event.preventDefault();
+        var username = $("#username").val();
+        var password = $("#password").val();
+        if (isEmpty(username)) {
+            $("#msg").html("用户名不可为空！");
+            return;
+        }
+        if (isEmpty(password)) {
+            $("#msg").html("密码不可为空！");
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/login",
+            data: {username: username, password: password},
+            success: function (response) {
+                if (response === "success") {
+                    window.location.href = "index.html"; // 登录成功，跳转到index页面
+                } else {
+                    $("#msg").html("用户名或密码错误，请重新输入！"); // 登录失败，显示错误提示
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log("Error: " + error);
+            }
+        });
+    });
+
+    function isEmpty(str) {
+        if (str == null || str.trim() == "") {
+            return true;
+        }
+        return false;
+    }
+</script>
 </html>
