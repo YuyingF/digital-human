@@ -1,5 +1,9 @@
 package com.icbc.digitalhuman.Websocket;
 
+import com.icbc.digitalhuman.DTO.InfoAndText;
+import com.icbc.digitalhuman.Entity.NecessaryInfo;
+import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.Utils.Regex;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -11,6 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static com.icbc.digitalhuman.Utils.writeReport.writeReport;
+
 @ServerEndpoint("/test-one")
 @Component
 //@Service
@@ -19,7 +28,7 @@ public class WebSocket {
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     //synchronize的对象需要是final
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
-
+    private InfoAndText infoAndText = new InfoAndText();
     /** concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      在外部可以获取此连接的所有websocket对象，并能对其触发消息发送功能，我们的定时发送核心功能的实现在与此变量 */
     //private static CopyOnWriteArraySet<WebSocket> webSocketSet = new CopyOnWriteArraySet<WebSocket>();
@@ -43,7 +52,8 @@ public class WebSocket {
         idle.add(session);
         //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
 
-        sendMessageToOneUser(session.getId(),"客户端你好，我是杨子慕");
+        sendMessageToOneUser(session.getId(),"客户端你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
+        sendMessageToOneUser(session.getId(),"预估耗时（分钟）:20");
     }
     /**
      * 客户端关闭
@@ -74,9 +84,27 @@ public class WebSocket {
      */
     @OnMessage
     public void onMessage(String message,Session session) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String formattedDate = formatter.format(date);
+
         String User_ID=session.getId();
+        writeReport(formattedDate+"服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
+        writeReport(message+"\r\n", "conversionLog\\123.txt");
         System.out.println("服务端收到客户端"+User_ID+"发来的消息: "+ message +"");
-        sendMessageToOneUser(User_ID,"已收到您的消息");
+        infoAndText.setText(message);
+
+        infoAndText = Regex.extractInfo(infoAndText);
+        NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
+        UnnecessaryInfo unnecessaryInfo = infoAndText.getUnnecessaryInfo();
+
+
+        String reply="已收到您的消息，"+necessaryInfo.checkAllFilled();
+
+
+        sendMessageToOneUser(User_ID,reply);
+        writeReport(formattedDate+"服务器回复消息：\r\n", "conversionLog\\123.txt");
+        writeReport(reply+"\r\n", "conversionLog\\123.txt");
     }
     /**
      * 推送消息到指定用户

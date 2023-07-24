@@ -14,7 +14,7 @@ public class NecessaryInfo {
     // 是否会发生中断
     String isInterruptPossible;
     // 预估耗时（分钟）
-    int estimatedTimeInMinutes;
+    String estimatedTimeInMinutes;
     // 申请类型
     String applicationType;
     // 生效日期
