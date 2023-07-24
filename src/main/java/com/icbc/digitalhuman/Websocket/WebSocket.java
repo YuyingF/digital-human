@@ -3,6 +3,7 @@ package com.icbc.digitalhuman.Websocket;
 import com.icbc.digitalhuman.DTO.InfoAndText;
 import com.icbc.digitalhuman.Entity.NecessaryInfo;
 import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.Utils.CreatSQLCode;
 import com.icbc.digitalhuman.Utils.Regex;
 import org.springframework.stereotype.Component;
 
@@ -101,6 +102,9 @@ public class WebSocket {
 
         String reply="已收到您的消息，"+necessaryInfo.checkAllFilled();
 
+        if(necessaryInfo.checkAllFilled()=="全部属性都有值"){
+            String code=CreatSQLCode.WriteSQLCode(necessaryInfo,unnecessaryInfo);
+        }
 
         sendMessageToOneUser(User_ID,reply);
         writeReport(formattedDate+"服务器回复消息：\r\n", "conversionLog\\123.txt");
