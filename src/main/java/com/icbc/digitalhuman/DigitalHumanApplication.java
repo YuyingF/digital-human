@@ -1,9 +1,9 @@
 package com.icbc.digitalhuman;
 
-import com.icbc.digitalhuman.DTO.InfoAndText;
-import com.icbc.digitalhuman.Entity.NecessaryInfo;
-import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
-import com.icbc.digitalhuman.Utils.Regex;
+import com.icbc.digitalhuman.dto.InfoAndText;
+import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.utils.Regex;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

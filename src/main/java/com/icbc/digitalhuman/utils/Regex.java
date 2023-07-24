@@ -1,8 +1,8 @@
-package com.icbc.digitalhuman.Utils;
+package com.icbc.digitalhuman.utils;
 
-import com.icbc.digitalhuman.DTO.InfoAndText;
-import com.icbc.digitalhuman.Entity.NecessaryInfo;
-import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.dto.InfoAndText;
+import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 
 import java.util.HashMap;
 import java.util.Map;

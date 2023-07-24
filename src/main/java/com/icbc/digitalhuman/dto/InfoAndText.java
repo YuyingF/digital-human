@@ -1,7 +1,7 @@
-package com.icbc.digitalhuman.DTO;
+package com.icbc.digitalhuman.dto;
 
-import com.icbc.digitalhuman.Entity.NecessaryInfo;
-import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import lombok.Data;
 
 @Data

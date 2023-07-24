@@ -1,9 +1,9 @@
-package com.icbc.digitalhuman.Websocket;
+package com.icbc.digitalhuman.websocket;
 
-import com.icbc.digitalhuman.DTO.InfoAndText;
-import com.icbc.digitalhuman.Entity.NecessaryInfo;
-import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
-import com.icbc.digitalhuman.Utils.Regex;
+import com.icbc.digitalhuman.dto.InfoAndText;
+import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.utils.Regex;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.icbc.digitalhuman.Utils.writeReport.writeReport;
+import static com.icbc.digitalhuman.utils.WriteReport.writeReport;
 
 @ServerEndpoint("/test-one")
 @Component

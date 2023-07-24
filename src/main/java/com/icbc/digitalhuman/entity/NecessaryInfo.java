@@ -1,4 +1,4 @@
-package com.icbc.digitalhuman.Entity;
+package com.icbc.digitalhuman.entity;
 
 import lombok.Data;
 

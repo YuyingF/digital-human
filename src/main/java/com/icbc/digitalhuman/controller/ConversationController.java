@@ -1,6 +1,6 @@
-package com.icbc.digitalhuman.Controller;
+package com.icbc.digitalhuman.controller;
 
-import com.icbc.digitalhuman.Evaluator.ConversationEvaluator;
+import com.icbc.digitalhuman.evaluator.ConversationEvaluator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;

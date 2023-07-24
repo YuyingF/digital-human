@@ -1,4 +1,4 @@
-package com.icbc.digitalhuman.Evaluator;
+package com.icbc.digitalhuman.evaluator;
 
 public interface ConversationEvaluator {
     void thumbsUp(String conversationId);

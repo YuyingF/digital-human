@@ -1,4 +1,4 @@
-package com.icbc.digitalhuman.Controller;
+package com.icbc.digitalhuman.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;

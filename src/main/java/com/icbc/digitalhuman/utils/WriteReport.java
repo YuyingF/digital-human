@@ -1,8 +1,8 @@
-package com.icbc.digitalhuman.Utils;
+package com.icbc.digitalhuman.utils;
 
 import java.io.*;
 
-public class writeReport {
+public class WriteReport {
 
     public static void writeReport(String content,String filePath) {
         BufferedWriter out = null;
