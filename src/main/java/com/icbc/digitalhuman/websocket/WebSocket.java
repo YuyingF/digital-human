@@ -1,9 +1,10 @@
-package com.icbc.digitalhuman.websocket;
+package com.icbc.digitalhuman.Websocket;
 
-import com.icbc.digitalhuman.dto.InfoAndText;
-import com.icbc.digitalhuman.entity.NecessaryInfo;
-import com.icbc.digitalhuman.entity.UnnecessaryInfo;
-import com.icbc.digitalhuman.utils.Regex;
+import com.icbc.digitalhuman.DTO.InfoAndText;
+import com.icbc.digitalhuman.Entity.NecessaryInfo;
+import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.Utils.CreatSQLCode;
+import com.icbc.digitalhuman.Utils.Regex;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -18,7 +19,7 @@ import java.util.concurrent.Future;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.icbc.digitalhuman.utils.WriteReport.writeReport;
+import static com.icbc.digitalhuman.Utils.writeReport.writeReport;
 
 @ServerEndpoint("/test-one")
 @Component
@@ -101,6 +102,9 @@ public class WebSocket {
 
         String reply="已收到您的消息，"+necessaryInfo.checkAllFilled();
 
+        if(necessaryInfo.checkAllFilled()=="全部属性都有值"){
+            String code=CreatSQLCode.WriteSQLCode(necessaryInfo,unnecessaryInfo);
+        }
 
         sendMessageToOneUser(User_ID,reply);
         writeReport(formattedDate+"服务器回复消息：\r\n", "conversionLog\\123.txt");

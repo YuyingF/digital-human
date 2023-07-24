@@ -8,43 +8,43 @@ import java.util.Map;
 @Data
 public class NecessaryInfo {
     // 接口输入参数
-    String interfaceInputParameters;
+    public String interfaceInputParameters;
     // 是否支持重跑
-    String isRetrySupported;
+    public String isRetrySupported;
     // 是否会发生中断
-    String isInterruptPossible;
+    public String isInterruptPossible;
     // 预估耗时（分钟）
-    String estimatedTimeInMinutes;
+    public String estimatedTimeInMinutes;
     // 申请类型
-    String applicationType;
+    public String applicationType;
     // 生效日期
-    String effectiveDate;
+    public String effectiveDate;
     // 交付日期
-    String deliveryDate;
+    public String deliveryDate;
     // 投产日期
-    String productionDate;
+    public String productionDate;
     // 版本
-    String version;
+    public String version;
     // 中心项目标号
-    String centralProjectNumber;
+    public String centralProjectNumber;
     // 项目名称
-    String projectName;
+    public String projectName;
     // 需求子条目
-    String requirementSubItem;
+    public String requirementSubItem;
     // 应用
-    String application;
+    public String application;
     // 批量种类
-    String batchCategory;
+    public String batchCategory;
     // 批量场次
-    String batchSession;
+    public String batchSession;
     // 作业描述
-    String jobDescription;
+    public String jobDescription;
     // 前提作业
-    String prerequisiteJob;
+    public String prerequisiteJob;
     // 执行频度
-    String executionFrequency;
+    public String executionFrequency;
     // 执行范围
-    String executionScope;
+    public String executionScope;
 
     private static final Map<String, String> PROPERTY_NAME_MAP = new HashMap<>();
 
