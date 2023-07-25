@@ -4,7 +4,7 @@ import java.io.*;
 
 public class WriteReport {
 
-    public static void writeReport(String content,String filePath) {
+    public static void writeReport(String content, String filePath) {
         BufferedWriter out = null;
         try {
             File file = new File(filePath);

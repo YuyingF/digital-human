@@ -1,10 +1,10 @@
-package com.icbc.digitalhuman.Websocket;
+package com.icbc.digitalhuman.websocket;
 
-import com.icbc.digitalhuman.DTO.InfoAndText;
-import com.icbc.digitalhuman.Entity.NecessaryInfo;
-import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
-import com.icbc.digitalhuman.Utils.CreatSQLCode;
-import com.icbc.digitalhuman.Utils.Regex;
+import com.icbc.digitalhuman.dto.InfoAndText;
+import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.utils.CreatSQLCode;
+import com.icbc.digitalhuman.utils.Regex;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -19,7 +19,7 @@ import java.util.concurrent.Future;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.icbc.digitalhuman.Utils.writeReport.writeReport;
+import static com.icbc.digitalhuman.utils.WriteReport.writeReport;
 
 @ServerEndpoint("/test-one")
 @Component
@@ -30,40 +30,44 @@ public class WebSocket {
     //synchronize的对象需要是final
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
     private InfoAndText infoAndText = new InfoAndText();
-    /** concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
-     在外部可以获取此连接的所有websocket对象，并能对其触发消息发送功能，我们的定时发送核心功能的实现在与此变量 */
-    //private static CopyOnWriteArraySet<WebSocket> webSocketSet = new CopyOnWriteArraySet<WebSocket>();
 
+    /**
+     * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
+     * 在外部可以获取此连接的所有websocket对象，并能对其触发消息发送功能，我们的定时发送核心功能的实现在与此变量
+     */
+    //private static CopyOnWriteArraySet<WebSocket> webSocketSet = new CopyOnWriteArraySet<WebSocket>();
     public CopyOnWriteArraySet<Session> getIdle() {
         return idle;
     }
 
 
-
     /**
      * 客户端连接
+     *
      * @param session
      */
     @OnOpen
     public void onOpen(Session session) {
         InetSocketAddress remoteAddress = WebSocketUtils.getRemoteAddress(session);
-        System.out.println("有新的客户端连接了,ip为:"+remoteAddress+"ID为："+session.getId());
+        System.out.println("有新的客户端连接了,ip为:" + remoteAddress + "ID为：" + session.getId());
         //将新用户存入在线的组
         clients.put(session.getId(), session);
         idle.add(session);
         //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
 
-        sendMessageToOneUser(session.getId(),"客户端你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
-        sendMessageToOneUser(session.getId(),"预估耗时（分钟）:20");
+        sendMessageToOneUser(session.getId(), "客户端你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
+        sendMessageToOneUser(session.getId(), "预估耗时（分钟）:20");
     }
+
     /**
      * 客户端关闭
+     *
      * @param session session
      */
     @OnClose
     public void onClose(Session session) {
         InetSocketAddress remoteAddress = WebSocketUtils.getRemoteAddress(session);
-        System.out.println("有用户断开了, ip为:"+ remoteAddress);
+        System.out.println("有用户断开了, ip为:" + remoteAddress);
         //将掉线的用户移除在线的组里
         clients.remove(session.getId());
         idle.remove(session);
@@ -72,6 +76,7 @@ public class WebSocket {
 
     /**
      * 发生错误
+     *
      * @param throwable e
      */
     @OnError
@@ -81,18 +86,19 @@ public class WebSocket {
 
     /**
      * 收到客户端发来消息
-     * @param message  消息对象
+     *
+     * @param message 消息对象
      */
     @OnMessage
-    public void onMessage(String message,Session session) {
+    public void onMessage(String message, Session session) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         String formattedDate = formatter.format(date);
 
-        String User_ID=session.getId();
-        writeReport(formattedDate+"服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
-        writeReport(message+"\r\n", "conversionLog\\123.txt");
-        System.out.println("服务端收到客户端"+User_ID+"发来的消息: "+ message +"");
+        String User_ID = session.getId();
+        writeReport(formattedDate + "服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
+        writeReport(message + "\r\n", "conversionLog\\123.txt");
+        System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
         infoAndText.setText(message);
 
         infoAndText = Regex.extractInfo(infoAndText);
@@ -100,16 +106,17 @@ public class WebSocket {
         UnnecessaryInfo unnecessaryInfo = infoAndText.getUnnecessaryInfo();
 
 
-        String reply="已收到您的消息，"+necessaryInfo.checkAllFilled();
+        String reply = "已收到您的消息，" + necessaryInfo.checkAllFilled();
 
-        if(necessaryInfo.checkAllFilled()=="全部属性都有值"){
-            String code=CreatSQLCode.WriteSQLCode(necessaryInfo,unnecessaryInfo);
+        if (necessaryInfo.checkAllFilled() == "全部属性都有值") {
+            String code = CreatSQLCode.WriteSQLCode(necessaryInfo, unnecessaryInfo);
         }
 
-        sendMessageToOneUser(User_ID,reply);
-        writeReport(formattedDate+"服务器回复消息：\r\n", "conversionLog\\123.txt");
-        writeReport(reply+"\r\n", "conversionLog\\123.txt");
+        sendMessageToOneUser(User_ID, reply);
+        writeReport(formattedDate + "服务器回复消息：\r\n", "conversionLog\\123.txt");
+        writeReport(reply + "\r\n", "conversionLog\\123.txt");
     }
+
     /**
      * 推送消息到指定用户
      *
@@ -121,25 +128,27 @@ public class WebSocket {
         try {
             session.getBasicRemote().sendText(message);
         } catch (IOException e) {
-            System.out.println("错误！！\r\n链接"+userId+"发送失败");
+            System.out.println("错误！！\r\n链接" + userId + "发送失败");
         }
 
     }
+
     /**
      * 群发消息
+     *
      * @param message 消息内容
      */
     public void sendAll(String message) {
         for (Map.Entry<String, Session> sessionEntry : clients.entrySet()) {
-            Session session =sessionEntry.getValue();
+            Session session = sessionEntry.getValue();
             try {
                 synchronized (session) {
 //                send(session,message,500);
                     send(session, message);
                 }
                 //修改：误读IllegalStateException导致的异常退出
-            }catch (IllegalStateException e){
-                System.out.println("发送消息"+message+"时出现IllegalStateException");
+            } catch (IllegalStateException e) {
+                System.out.println("发送消息" + message + "时出现IllegalStateException");
                 e.printStackTrace();
             }
         }
@@ -150,8 +159,8 @@ public class WebSocket {
 //        messageBuffer.add(message);
 //    }
 
-    public static void send(Session session,String message) {
-        synchronized (session){
+    public static void send(Session session, String message) {
+        synchronized (session) {
             //session.getAsyncRemote().sendText(message);
             try {
                 session.getBasicRemote().sendText(message);

@@ -1,100 +1,100 @@
-package com.icbc.digitalhuman.Utils;
+package com.icbc.digitalhuman.utils;
 
-import com.icbc.digitalhuman.Entity.NecessaryInfo;
-import com.icbc.digitalhuman.Entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 
 public class CreatSQLCode {
-    public static String WriteSQLCode(NecessaryInfo necessaryInfo, UnnecessaryInfo unnecessaryInfo){
+    public static String WriteSQLCode(NecessaryInfo necessaryInfo, UnnecessaryInfo unnecessaryInfo) {
         System.out.println("INSERT INTO business_information_for_approval(interface_input_parameters," +
-                "is_retrys_supported,"+
-                "is_interrupt_possible,"+
-                "estimated_timeIn_minutes,"+
-                "application_type,"+
-                "effective_date,"+
-                "delivery_date,"+
-                "production_date,"+
-                "version,"+
-                "project_name,"+
-                "requirement_sub_item,"+
-                "application,"+
-                "batch_category,"+
-                "batch_session,"+
-                "job_description,"+
-                "prerequisite_job,"+
-                "execution_frequency,"+
-                "execution_scope,"+
+                "is_retrys_supported," +
+                "is_interrupt_possible," +
+                "estimated_timeIn_minutes," +
+                "application_type," +
+                "effective_date," +
+                "delivery_date," +
+                "production_date," +
+                "version," +
+                "project_name," +
+                "requirement_sub_item," +
+                "application," +
+                "batch_category," +
+                "batch_session," +
+                "job_description," +
+                "prerequisite_job," +
+                "execution_frequency," +
+                "execution_scope," +
 
-                "stored_procedure_interface,"+
-                "input_parameter_description,"+
-                "output_parameters,"+
-                "interruption_solution,"+
-                "upstream_application,"+
-                "file_interface_name,"+
-                "is_file_structure_changed,"+
-                "job_name,"+
-                "execution_frequency_description,"+
-                "upstream_application_chinese_name,"+
-                "is_temporary_table_fields_required,"+
-                "hasLegacy_files,"+
-                "upstream_text_description,"+
-                "upstream_contact,"+
-                "upstream_file_fransfer_method,"+
-                "upstream_point_to_point_transmission,"+
-                "downstream_application,"+
-                "downstream_target_interface,"+
-                "downstream_contact,"+
-                "downstream_point_to_point_transmission,"+
-                "downstream_file_transfer_method,"+
-                "development_team_description,"+
-                "applicant,"+
-                "application_time,"+
-                "execution_scope_description,"+
-                ")"+"VALUES("+
-                necessaryInfo.interfaceInputParameters+"\' , \'"+
-                necessaryInfo.isRetrySupported+"\' , \'"+
-                necessaryInfo.isInterruptPossible+"\' , \'"+
-                necessaryInfo.estimatedTimeInMinutes+"\' , \'"+
-                necessaryInfo.applicationType+"\' , \'"+
-                necessaryInfo.effectiveDate+"\' , \'"+
-                necessaryInfo.deliveryDate+"\' , \'"+
-                necessaryInfo.productionDate+"\' , \'"+
-                necessaryInfo.version+"\' , \'"+
-                necessaryInfo.centralProjectNumber+"\' , \'"+
-                necessaryInfo.projectName+"\' , \'"+
-                necessaryInfo.requirementSubItem+"\' , \'"+
-                necessaryInfo.application+"\' , \'"+
-                necessaryInfo.batchCategory+"\' , \'"+
-                necessaryInfo.batchSession+"\' , \'"+
-                necessaryInfo.jobDescription+"\' , \'"+
-                necessaryInfo.prerequisiteJob+"\' , \'"+
-                necessaryInfo.executionFrequency+"\' , \'"+
-                necessaryInfo.executionScope+"\' , \'"+
+                "stored_procedure_interface," +
+                "input_parameter_description," +
+                "output_parameters," +
+                "interruption_solution," +
+                "upstream_application," +
+                "file_interface_name," +
+                "is_file_structure_changed," +
+                "job_name," +
+                "execution_frequency_description," +
+                "upstream_application_chinese_name," +
+                "is_temporary_table_fields_required," +
+                "hasLegacy_files," +
+                "upstream_text_description," +
+                "upstream_contact," +
+                "upstream_file_fransfer_method," +
+                "upstream_point_to_point_transmission," +
+                "downstream_application," +
+                "downstream_target_interface," +
+                "downstream_contact," +
+                "downstream_point_to_point_transmission," +
+                "downstream_file_transfer_method," +
+                "development_team_description," +
+                "applicant," +
+                "application_time," +
+                "execution_scope_description," +
+                ")" + "VALUES(" +
+                necessaryInfo.interfaceInputParameters + "\' , \'" +
+                necessaryInfo.isRetrySupported + "\' , \'" +
+                necessaryInfo.isInterruptPossible + "\' , \'" +
+                necessaryInfo.estimatedTimeInMinutes + "\' , \'" +
+                necessaryInfo.applicationType + "\' , \'" +
+                necessaryInfo.effectiveDate + "\' , \'" +
+                necessaryInfo.deliveryDate + "\' , \'" +
+                necessaryInfo.productionDate + "\' , \'" +
+                necessaryInfo.version + "\' , \'" +
+                necessaryInfo.centralProjectNumber + "\' , \'" +
+                necessaryInfo.projectName + "\' , \'" +
+                necessaryInfo.requirementSubItem + "\' , \'" +
+                necessaryInfo.application + "\' , \'" +
+                necessaryInfo.batchCategory + "\' , \'" +
+                necessaryInfo.batchSession + "\' , \'" +
+                necessaryInfo.jobDescription + "\' , \'" +
+                necessaryInfo.prerequisiteJob + "\' , \'" +
+                necessaryInfo.executionFrequency + "\' , \'" +
+                necessaryInfo.executionScope + "\' , \'" +
 
-                unnecessaryInfo.storedProcedureInterface+"\' , \'"+
-                unnecessaryInfo.inputParameterDescription+"\' , \'"+
-                unnecessaryInfo.outputParameters+"\' , \'"+
-                unnecessaryInfo.interruptionSolution+"\' , \'"+
-                unnecessaryInfo.upstreamApplication+"\' , \'"+
-                unnecessaryInfo.fileInterfaceName+"\' , \'"+
-                unnecessaryInfo.isFileStructureChanged+"\' , \'"+
-                unnecessaryInfo.jobName+"\' , \'"+
-                unnecessaryInfo.executionFrequencyDescription+"\' , \'"+
-                unnecessaryInfo.upstreamApplicationChineseName+"\' , \'"+
-                unnecessaryInfo.isTemporaryTableFieldsRequired+"\' , \'"+
-                unnecessaryInfo.hasLegacyFiles+"\' , \'"+
-                unnecessaryInfo.upstreamTextDescription+"\' , \'"+
-                unnecessaryInfo.upstreamContact+"\' , \'"+
-                unnecessaryInfo.upstreamFileTransferMethod+"\' , \'"+
-                unnecessaryInfo.upstreamPointToPointTransmission+"\' , \'"+
-                unnecessaryInfo.downstreamApplication+"\' , \'"+
-                unnecessaryInfo.downstreamTargetInterface+"\' , \'"+
-                unnecessaryInfo.downstreamContact+"\' , \'"+
-                unnecessaryInfo.downstreamPointToPointTransmission+"\' , \'"+
-                unnecessaryInfo.downstreamFileTransferMethod+"\' , \'"+
-                unnecessaryInfo.developmentTeamDescription+"\' , \'"+
-                unnecessaryInfo.applicant+"\' , \'"+
-                unnecessaryInfo.applicationTime+"\' , \'"+
-                unnecessaryInfo.executionScopeDescription+"\' , \'"+
+                unnecessaryInfo.storedProcedureInterface + "\' , \'" +
+                unnecessaryInfo.inputParameterDescription + "\' , \'" +
+                unnecessaryInfo.outputParameters + "\' , \'" +
+                unnecessaryInfo.interruptionSolution + "\' , \'" +
+                unnecessaryInfo.upstreamApplication + "\' , \'" +
+                unnecessaryInfo.fileInterfaceName + "\' , \'" +
+                unnecessaryInfo.isFileStructureChanged + "\' , \'" +
+                unnecessaryInfo.jobName + "\' , \'" +
+                unnecessaryInfo.executionFrequencyDescription + "\' , \'" +
+                unnecessaryInfo.upstreamApplicationChineseName + "\' , \'" +
+                unnecessaryInfo.isTemporaryTableFieldsRequired + "\' , \'" +
+                unnecessaryInfo.hasLegacyFiles + "\' , \'" +
+                unnecessaryInfo.upstreamTextDescription + "\' , \'" +
+                unnecessaryInfo.upstreamContact + "\' , \'" +
+                unnecessaryInfo.upstreamFileTransferMethod + "\' , \'" +
+                unnecessaryInfo.upstreamPointToPointTransmission + "\' , \'" +
+                unnecessaryInfo.downstreamApplication + "\' , \'" +
+                unnecessaryInfo.downstreamTargetInterface + "\' , \'" +
+                unnecessaryInfo.downstreamContact + "\' , \'" +
+                unnecessaryInfo.downstreamPointToPointTransmission + "\' , \'" +
+                unnecessaryInfo.downstreamFileTransferMethod + "\' , \'" +
+                unnecessaryInfo.developmentTeamDescription + "\' , \'" +
+                unnecessaryInfo.applicant + "\' , \'" +
+                unnecessaryInfo.applicationTime + "\' , \'" +
+                unnecessaryInfo.executionScopeDescription + "\' , \'" +
                 ");\r\n");
 //        System.out.println("INSERT INTO table_name(interface_input_parameters)\r\n"+"VALUES("+necessaryInfo.interfaceInputParameters+");\r\n");
 //        System.out.println("INSERT INTO table_name(is_retrys_supported)\r\n"+"VALUES("+necessaryInfo.isRetrySupported+");\r\n");

@@ -1,38 +1,38 @@
 package com.icbc.digitalhuman.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import com.icbc.digitalhuman.entity.User;
+import com.icbc.digitalhuman.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import javax.annotation.Resource;
+
+@RestController
+@RequestMapping
 public class UserController {
 
-    @PostMapping("/login")
-    @ResponseBody
-    public String login(@RequestParam("username") String username, @RequestParam("password") String password) {
-        System.out.println("有新的登录请求");
-        System.out.println("username:" + username + "     password:" + password);
-        if (username.equals("12345") && password.equals("123")) {
-            System.out.println("密码正确");
-            return "success"; // 登录成功
-        } else {
-            return "failure"; // 登录失败
+    @Resource
+    private UserService userService;
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody User user) {
+        try {
+            userService.create(user);
+            return ResponseEntity.ok("用户注册成功!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("用户注册失败: " + e.getMessage());
         }
     }
-//    @RequestMapping("/login")
-//    public String getUser(String username, String password) {
-//        System.out.println("有新的登录请求");
-//        System.out.println("username:" + username + "     password:" + password);
-//        if (username.equals("12345") && password.equals("123")) {
-//            System.out.println("密码正确");
-//            return "index.html";
-//        }
-//        return "error.html";
-//    }
-//
-//    @RequestMapping("/yzm")
-//    public String login() {
-//        return "login.html";
-//    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestParam("username") String username, @RequestParam("password") String password) {
+        User user = userService.findByUsername(username);
+        if (user != null) {
+            if (password.equals(user.getPassword())) {
+                return ResponseEntity.ok("登录成功");
+            }
+        }
+        return ResponseEntity.ok("登陆失败");
+    }
 }

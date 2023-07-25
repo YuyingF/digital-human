@@ -7,6 +7,7 @@ import java.util.Map;
 
 @Data
 public class NecessaryInfo {
+
     // 接口输入参数
     public String interfaceInputParameters;
     // 是否支持重跑

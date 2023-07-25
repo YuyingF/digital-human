@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class UnnecessaryInfo {
+
     public String id;
     // 处理存过接口
     public String storedProcedureInterface;

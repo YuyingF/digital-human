@@ -1,27 +1,28 @@
 package com.icbc.digitalhuman.controller;
 
-import com.icbc.digitalhuman.evaluator.ConversationEvaluator;
+import com.icbc.digitalhuman.entity.Conversation;
+import com.icbc.digitalhuman.mapper.ConversationMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 @Controller
+@RequestMapping("index")
 public class ConversationController {
 
-    ConversationEvaluator conversationEvaluator;
+    @Resource
+    ConversationMapper conversationMapper;
 
-    @PostMapping("/{conversationId}/evaluate")
-    public ResponseEntity<String> evaluateConversation(@PathVariable String conversationId, @RequestParam("evaluation") String evaluation) {
-        if (evaluation.equalsIgnoreCase("thumbsUp")) {
-            conversationEvaluator.thumbsUp(conversationId);
-            return ResponseEntity.ok("Thumbs up received for conversation: " + conversationId);
-        } else if (evaluation.equalsIgnoreCase("thumbsDown")) {
-            conversationEvaluator.thumbsDown(conversationId);
-            return ResponseEntity.ok("Thumbs down received for conversation: " + conversationId);
-        } else {
-            return ResponseEntity.badRequest().body("Invalid evaluation value");
+    @PostMapping("/feedback")
+    public ResponseEntity<String> feedback(@RequestBody Conversation conversation) {
+        try {
+            conversationMapper.create(conversation);
+            return ResponseEntity.ok("反馈成功!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("反馈失败: " + e.getMessage());
         }
     }
 }
