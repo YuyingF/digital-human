@@ -1,7 +1,7 @@
 package com.icbc.digitalhuman.controller;
 
 import com.icbc.digitalhuman.entity.Conversation;
-import com.icbc.digitalhuman.mapper.ConversationMapper;
+import com.icbc.digitalhuman.service.ConversationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,13 +14,12 @@ import javax.annotation.Resource;
 public class ConversationController {
 
     @Resource
-    ConversationMapper conversationMapper;
+    ConversationService conversationService;
 
     @PostMapping("/feedback")
     public ResponseEntity<String> feedback(@RequestBody Conversation conversation) {
-        System.out.println("12345");
         try {
-            conversationMapper.create(conversation);
+            conversationService.create(conversation);
             return ResponseEntity.ok("反馈成功!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("反馈失败: " + e.getMessage());
