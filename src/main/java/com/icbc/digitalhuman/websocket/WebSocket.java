@@ -1,12 +1,19 @@
 package com.icbc.digitalhuman.websocket;
 
 import com.icbc.digitalhuman.dto.InfoAndText;
+import com.icbc.digitalhuman.entity.Conversation;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.mapper.ConversationMapper;
 import com.icbc.digitalhuman.utils.CreatSQLCode;
 import com.icbc.digitalhuman.utils.Regex;
+import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
+import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -21,16 +28,31 @@ import java.util.Date;
 
 import static com.icbc.digitalhuman.utils.WriteReport.writeReport;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+
 @ServerEndpoint("/test-one")
 @Component
 //@Service
 public class WebSocket {
     private static Map<String, Session> clients = new ConcurrentHashMap<>();
+
+    private static Map<String, Conversation> ID_to_conversation = new ConcurrentHashMap<>();
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     //synchronize的对象需要是final
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
     private InfoAndText infoAndText = new InfoAndText();
 
+    @Resource
+    ConversationMapper conversationMapper;
     /**
      * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      * 在外部可以获取此连接的所有websocket对象，并能对其触发消息发送功能，我们的定时发送核心功能的实现在与此变量
@@ -52,6 +74,8 @@ public class WebSocket {
         System.out.println("有新的客户端连接了,ip为:" + remoteAddress + "ID为：" + session.getId());
         //将新用户存入在线的组
         clients.put(session.getId(), session);
+        Conversation conversation = new Conversation();
+        ID_to_conversation.put(session.getId(),conversation);
         idle.add(session);
         //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
 
@@ -96,6 +120,7 @@ public class WebSocket {
         String formattedDate = formatter.format(date);
 
         String User_ID = session.getId();
+
         writeReport(formattedDate + "服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
         writeReport(message + "\r\n", "conversionLog\\123.txt");
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
@@ -111,10 +136,35 @@ public class WebSocket {
         if (necessaryInfo.checkAllFilled() == "全部属性都有值") {
             String code = CreatSQLCode.WriteSQLCode(necessaryInfo, unnecessaryInfo);
         }
+        Conversation conversation = new Conversation();
+        conversation.setId(User_ID);
+        conversation.setAnswer(reply);
+        conversation.setQuestion(message);
+        conversation.setUpdateTime(formattedDate);
+        conversation.setFeedback(1);
 
+//        ID_to_conversation.get(User_ID).setId(User_ID);
+//        ID_to_conversation.get(User_ID).setAnswer(reply);
+//        ID_to_conversation.get(User_ID).setQuestion(message);
+//        ID_to_conversation.get(User_ID).setUpdateTime(formattedDate);
+//        ID_to_conversation.get(User_ID).setFeedback(3);
         sendMessageToOneUser(User_ID, reply);
-        writeReport(formattedDate + "服务器回复消息：\r\n", "conversionLog\\123.txt");
-        writeReport(reply + "\r\n", "conversionLog\\123.txt");
+
+        //存入数据库
+        try {
+            save_to_database(conversation);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+        }
+//        try {
+//            conversationMapper.create(conversation);
+//        } catch (Exception e) {
+//            System.out.println("fuck you");
+//        }
+
+//        writeReport(formattedDate + "服务器回复消息：\r\n", "conversionLog\\123.txt");
+//        writeReport(reply + "\r\n", "conversionLog\\123.txt");
     }
 
     /**
@@ -168,6 +218,26 @@ public class WebSocket {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void save_to_database(Conversation conversation) throws IOException{
+        String url="http://localhost:8080/index/feedback";//调用的接口地址
+        String id = conversation.getId();
+        String question = conversation.getQuestion();
+        String answer = conversation.getAnswer();
+        int feedback= conversation.getFeedback();
+        String updateTime=conversation.getUpdateTime();
+        String param="{"+"\"id\""+":"+"\""+id+"\""+","+"\"question\""+":"+"\""+question+"\""+","+"\"answer\""+":"+"\""+answer+"\""+","+"\"feedback\""+":"+feedback+","+"\"updateTime\""+":"+"\""+updateTime+"\""+"}";
+        System.out.println(param);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        HttpPost post = new HttpPost(url);
+        post.setHeader("Content-Type", "application/json");
+        StringEntity entity = new StringEntity(param, StandardCharsets.UTF_8);
+        post.setEntity(entity);
+
+        HttpResponse response = httpClient.execute(post);
+
     }
     //2020.9.20注释了这段代码，为了解决时间延迟的问题
 //    public static void send(Session session, String message, Integer timeout) throws InterruptedException {

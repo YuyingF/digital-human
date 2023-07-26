@@ -18,6 +18,7 @@ public class ConversationController {
 
     @PostMapping("/feedback")
     public ResponseEntity<String> feedback(@RequestBody Conversation conversation) {
+        System.out.println("12345");
         try {
             conversationMapper.create(conversation);
             return ResponseEntity.ok("反馈成功!");
