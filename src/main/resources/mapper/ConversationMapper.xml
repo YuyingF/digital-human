@@ -6,8 +6,8 @@
 <mapper namespace="com.icbc.digitalhuman.mapper.ConversationMapper">
 
     <insert id="create">
-        INSERT INTO conversation (id, question, answer, feedback, update_time)
-        VALUES (#{id}, #{question}, #{answer}, #{feedback}, #{updateTime})
+        INSERT INTO conversation (id, username, question, answer, feedback, update_time)
+        VALUES (#{id}, #{username}, #{question}, #{answer}, #{feedback}, #{updateTime})
     </insert>
 
 </mapper>
