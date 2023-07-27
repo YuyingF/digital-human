@@ -20,9 +20,9 @@ public class ConversationController {
     public ResponseEntity<String> feedback(@RequestBody Conversation conversation) {
         try {
             conversationService.create(conversation);
-            return ResponseEntity.ok("反馈成功!");
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("反馈失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail: " + e.getMessage());
         }
     }
 }

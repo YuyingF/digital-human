@@ -19,9 +19,9 @@ public class UserController {
     public ResponseEntity<String> register(@RequestBody User user) {
         try {
             userService.create(user);
-            return ResponseEntity.ok("用户注册成功!");
+            return ResponseEntity.ok("success");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("用户注册失败: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail: " + e.getMessage());
         }
     }
 
@@ -30,9 +30,9 @@ public class UserController {
         User user = userService.findByUsername(username);
         if (user != null) {
             if (password.equals(user.getPassword())) {
-                return ResponseEntity.ok("登录成功");
+                return ResponseEntity.ok("success");
             }
         }
-        return ResponseEntity.ok("登陆失败");
+        return ResponseEntity.ok("fail");
     }
 }
