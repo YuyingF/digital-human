@@ -148,7 +148,7 @@ public class WebSocket {
             }
             else if(message.equals("#bad")){
                 System.out.println(message);
-                sendMessageToOneUser(User_ID, "已收到您的差评，感谢您的评价");
+                sendMessageToOneUser(User_ID, "已收到您的差评，我们会努力改进我们的服务");
                 ID_to_conversation.get(User_ID).setFeedback(0);
             }
 
@@ -160,7 +160,7 @@ public class WebSocket {
             }
             if(user_request.equals("1")&&user_state==0)
             {
-                reply="检测到您似乎准备进行批量作业，请输入相应的参数，\r\n以便我进行处理";
+                reply="检测到您似乎准备进行批量作业，请输入相应的参数，以便我进行处理";
                 user_state=1;
             }
             if(user_state==1&&user_request.equals("0")){
@@ -208,11 +208,10 @@ public class WebSocket {
                 reply=reply+reply_add;
                 reply_add="empty";
             }
-            ID_to_conversation.get(User_ID).setId(ID_to_conversation.get(User_ID).getId());
             ID_to_conversation.get(User_ID).setAnswer(reply);
             ID_to_conversation.get(User_ID).setQuestion(message);
             ID_to_conversation.get(User_ID).setUpdateTime(formattedDate);
-            ID_to_conversation.get(session.getId()).setFeedback(1);
+            ID_to_conversation.get(User_ID).setFeedback(1);
 
         }
 //        writeReport(formattedDate + "服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
@@ -284,8 +283,11 @@ public class WebSocket {
         String answer = conversation.getAnswer();
         int feedback= conversation.getFeedback();
         String updateTime=conversation.getUpdateTime();
+        System.out.println("____________________________________________________");
+        System.out.println("向数据库接口发送的json为：");
         String param="{"+"\"username\""+":"+"\""+id+"\""+","+"\"question\""+":"+"\""+question+"\""+","+"\"answer\""+":"+"\""+answer+"\""+","+"\"feedback\""+":"+feedback+"}";
         System.out.println(param);
+        System.out.println("____________________________________________________");
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         HttpPost post = new HttpPost(url);
