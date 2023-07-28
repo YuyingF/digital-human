@@ -4,6 +4,7 @@ import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.Conversation;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
+import com.icbc.digitalhuman.entity.User;
 import com.icbc.digitalhuman.mapper.ConversationMapper;
 import com.icbc.digitalhuman.utils.CreatSQLCode;
 import com.icbc.digitalhuman.utils.Regex;
@@ -26,6 +27,7 @@ import java.util.concurrent.Future;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.icbc.digitalhuman.entity.User.user_logging;
 import static com.icbc.digitalhuman.utils.WriteReport.writeReport;
 
 import org.apache.http.HttpResponse;
@@ -46,6 +48,8 @@ public class WebSocket {
     private static Map<String, Session> clients = new ConcurrentHashMap<>();
 
     private static Map<String, Conversation> ID_to_conversation = new ConcurrentHashMap<>();
+    private static int user_state=0;//1 进入审批阶段 2进入确认阶段
+    private static int modify_flag=0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     //synchronize的对象需要是final
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
@@ -78,8 +82,12 @@ public class WebSocket {
         ID_to_conversation.put(session.getId(),conversation);
         idle.add(session);
         //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
+        System.out.println(User.user_logging+"正在登录");
 
-        sendMessageToOneUser(session.getId(), "客户端你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
+        ID_to_conversation.get(session.getId()).setId(User.user_logging);
+        ID_to_conversation.get(session.getId()).setFeedback(1);
+        ID_to_conversation.get(session.getId()).setAnswer(User.user_logging+"你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：预估耗时（分钟）:20");
+        sendMessageToOneUser(session.getId(), User.user_logging+"你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
         sendMessageToOneUser(session.getId(), "预估耗时（分钟）:20");
     }
 
@@ -92,8 +100,14 @@ public class WebSocket {
     public void onClose(Session session) {
         InetSocketAddress remoteAddress = WebSocketUtils.getRemoteAddress(session);
         System.out.println("有用户断开了, ip为:" + remoteAddress);
+        try {
+            save_to_database(ID_to_conversation.get(session.getId()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         //将掉线的用户移除在线的组里
         clients.remove(session.getId());
+
         idle.remove(session);
         busy.remove(session);
     }
@@ -117,51 +131,94 @@ public class WebSocket {
     public void onMessage(String message, Session session) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
-        String formattedDate = formatter.format(date);
-
-        String User_ID = session.getId();
-
-        writeReport(formattedDate + "服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
-        writeReport(message + "\r\n", "conversionLog\\123.txt");
-        System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
-        infoAndText.setText(message);
-
-        infoAndText = Regex.extractInfo(infoAndText);
+        String reply_add="empty";
+        String user_request="0";
         NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
         UnnecessaryInfo unnecessaryInfo = infoAndText.getUnnecessaryInfo();
+        String formattedDate = formatter.format(date);
+        user_request=Conversation.judge_user_desire(message);
+        String User_ID = session.getId();
+        System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
+        if(message.charAt(0)=='#') {
 
+            if (message.equals("#good")){
+                System.out.println(message);
+                sendMessageToOneUser(User_ID, "已收到您的好评，感谢您的评价");
+                ID_to_conversation.get(User_ID).setFeedback(1);
+            }
+            else if(message.equals("#bad")){
+                System.out.println(message);
+                sendMessageToOneUser(User_ID, "已收到您的差评，感谢您的评价");
+                ID_to_conversation.get(User_ID).setFeedback(0);
+            }
 
-        String reply = "已收到您的消息，" + necessaryInfo.checkAllFilled();
-
-        if (necessaryInfo.checkAllFilled() == "全部属性都有值") {
-            String code = CreatSQLCode.WriteSQLCode(necessaryInfo, unnecessaryInfo);
         }
-        Conversation conversation = new Conversation();
-        conversation.setId(User_ID);
-        conversation.setAnswer(reply);
-        conversation.setQuestion(message);
-        conversation.setUpdateTime(formattedDate);
-        conversation.setFeedback(1);
+        else{
+            String reply="";
+            if(user_request.equals("2")){
+                reply="您好，有什么可以帮助您的吗";
+            }
+            if(user_request.equals("1")&&user_state==0)
+            {
+                reply="检测到您似乎准备进行批量作业，请输入相应的参数，\r\n以便我进行处理";
+                user_state=1;
+            }
+            if(user_state==1&&user_request.equals("0")){
+                infoAndText.setText(message);
+                infoAndText = Regex.extractInfo(infoAndText);
+                necessaryInfo = infoAndText.getNecessaryInfo();
+                unnecessaryInfo = infoAndText.getUnnecessaryInfo();
+                if(necessaryInfo.checkAllFilled() == "全部属性都有值"&&modify_flag==0){
+                    reply = "已收到您的消息，" + necessaryInfo.checkAllFilled()+"，以下是本次作业的全部汇总，请回复没问题/有问题";
+                    reply_add=necessaryInfo.getAllPropertiesAsString()+unnecessaryInfo.getAllPropertiesAsString();
+                    user_state=2;
+                }
+                else if(modify_flag==1){
+                    reply="以下是您修改后的内容，请回复没问题/有问题";
+                    reply_add=necessaryInfo.getAllPropertiesAsString()+unnecessaryInfo.getAllPropertiesAsString();
+                    user_state=2;
+                }
+                else{
+                    reply = "已收到您的消息，"+ necessaryInfo.checkAllFilled()+"请继续补充";
+                }
+            }
 
-//        ID_to_conversation.get(User_ID).setId(User_ID);
-//        ID_to_conversation.get(User_ID).setAnswer(reply);
-//        ID_to_conversation.get(User_ID).setQuestion(message);
-//        ID_to_conversation.get(User_ID).setUpdateTime(formattedDate);
-//        ID_to_conversation.get(User_ID).setFeedback(3);
-        sendMessageToOneUser(User_ID, reply);
+            if(user_state==2&&user_request=="3"){
+                reply="好的，您提交的审批已全部记录，祝您工作愉快。";
+                String code = CreatSQLCode.WriteSQLCode(necessaryInfo, unnecessaryInfo);
+                modify_flag=0;
+                user_state=0;
+            }
+            if(user_state==2&&user_request=="4"){
+                reply="好的，请您再次提交您想要修改的部分";
+                modify_flag=1;
+                user_state=1;
+            }
 
-        //存入数据库
-        try {
-            save_to_database(conversation);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
+            //存入数据库
+            try {
+                save_to_database(ID_to_conversation.get(User_ID));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            sendMessageToOneUser(User_ID, reply);
+            if(reply_add.equals("empty")==false){
+                sendMessageToOneUser(User_ID, reply_add);
+                reply=reply+reply_add;
+                reply_add="empty";
+            }
+            ID_to_conversation.get(User_ID).setId(ID_to_conversation.get(User_ID).getId());
+            ID_to_conversation.get(User_ID).setAnswer(reply);
+            ID_to_conversation.get(User_ID).setQuestion(message);
+            ID_to_conversation.get(User_ID).setUpdateTime(formattedDate);
+            ID_to_conversation.get(session.getId()).setFeedback(1);
+
         }
-//        try {
-//            conversationMapper.create(conversation);
-//        } catch (Exception e) {
-//            System.out.println("fuck you");
-//        }
+//        writeReport(formattedDate + "服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
+//        writeReport(message + "\r\n", "conversionLog\\123.txt");
+
+
 
 //        writeReport(formattedDate + "服务器回复消息：\r\n", "conversionLog\\123.txt");
 //        writeReport(reply + "\r\n", "conversionLog\\123.txt");
@@ -227,7 +284,7 @@ public class WebSocket {
         String answer = conversation.getAnswer();
         int feedback= conversation.getFeedback();
         String updateTime=conversation.getUpdateTime();
-        String param="{"+"\"id\""+":"+"\""+id+"\""+","+"\"question\""+":"+"\""+question+"\""+","+"\"answer\""+":"+"\""+answer+"\""+","+"\"feedback\""+":"+feedback+","+"\"updateTime\""+":"+"\""+updateTime+"\""+"}";
+        String param="{"+"\"username\""+":"+"\""+id+"\""+","+"\"question\""+":"+"\""+question+"\""+","+"\"answer\""+":"+"\""+answer+"\""+","+"\"feedback\""+":"+feedback+"}";
         System.out.println(param);
         CloseableHttpClient httpClient = HttpClients.createDefault();
 

@@ -8,7 +8,7 @@
             background-image: url("image/background.jpeg");
             background-repeat: no-repeat;
             background-size: 100% 100%;
-            background-attachment: fixed;
+            background-attachment: fixed; /*图片铺满整个页面*/
         }
 
         .main {
@@ -25,6 +25,7 @@
             margin: auto;
         }
 
+        /*欢迎那几个字*/
         .main h2 {
             color: rgb(0, 0, 0);
             margin-left: 150px;
@@ -51,62 +52,59 @@
             transform: translateX(-50%);
         }
 
-        /*调整按钮位置和样式*/
         .form button {
             width: 150px;
             height: 30px;
             color: white;
-            background-color: rgb(0, 0, 0); /*按钮颜色为黑色*/
+            background-color: rgb(0, 0, 0); /* 按钮颜色为黑色 */
             border-style: none;
             border-radius: 5px;
             font-size: 15px;
             margin-top: 30px;
-            margin-left: 100px; /*按钮位置稍作调整，左右边距都为100px*/
+            margin-left: 30px; /* 调整登录按钮的左边距，使其并排排列 */
             outline: none;
             cursor: pointer; /*光标放到上面有小手*/
+            position: absolute;
+            bottom: 20px; /* 调整按钮的下边距 */
         }
 
         .form button:hover {
-            background-color: #222; /*鼠标悬停时稍微变暗*/
+            background-color: #222; /* 鼠标悬停时稍微变暗 */
         }
 
         .form button:active {
-            background-color: #111; /*按下时再稍微变暗*/
-        }
-
-        #loginButton {
-            margin-left: 20px; /*登录按钮与左侧的间距调整*/
+            background-color: #111; /* 按下时再稍微变暗 */
         }
 
         #registerButton {
-            margin-left: -20px; /*注册按钮与右侧的间距调整*/
+            margin-left: 30px; /* 调整注册按钮的左边距，使其在左侧 */
         }
+
+        /* 登录按钮样式调整 */
+        #loginButton {
+            margin-left: 210px; /* 调整登录按钮的左边距，使其在右侧 */
+        }
+
     </style>
 </head>
 <body>
 <div class="main">
     <h2>欢迎访问工小妍系统</h2>
     <form action="http://localhost:8080/login" method="post" class="form" id="loginForm">
-        <div>
-            <label for="username">用户名:</label>
-            <input type="text" name="username" id="username">
-        </div>
-        <div>
-            <label for="password">密码:</label>
-            <input type="password" name="password" id="password">
-        </div>
+        用户名: <input type="text" name="username" id="username"><!--输入的用户名保存到username变量，传回后端-->
+        <br> <br>
+        密　码: <input type="password" name="password" id="password"><br>
         <span id="msg"></span>
-        <div>
-            <button type="submit" id="loginButton">登录</button>
-            <button type="button" id="registerButton">注册</button>
-        </div>
+        <button type="submit" id="loginButton">登录</button>
+        <button type="button" id="registerButton">注册</button>
+        <br>
     </form>
 </div>
 </body>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script type="text/javascript">
     $("#loginButton").click(function (event) {
-        event.preventDefault(); //阻止默认的表单提交行为
+        event.preventDefault(); // 阻止默认的表单提交行为
         var username = $("#username").val();
         var password = $("#password").val();
         if (isEmpty(username)) {
@@ -123,9 +121,9 @@
             data: {username: username, password: password},
             success: function (response) {
                 if (response === "success") {
-                    window.location.href = "index.html"; //登录成功，跳转到index页面
+                    window.location.href = "index.html"; // 登录成功，跳转到index页面
                 } else {
-                    $("#msg").html("用户名或密码错误，请重新输入！"); //登录失败，显示错误提示
+                    $("#msg").html("用户名或密码错误，请重新输入！"); // 登录失败，显示错误提示
                 }
             },
             error: function (xhr, status, error) {
@@ -135,7 +133,7 @@
     });
 
     $("#registerButton").click(function (event) {
-        event.preventDefault(); //阻止默认的表单提交行为
+        event.preventDefault(); // 阻止默认的表单提交行为
         var username = $("#username").val();
         var password = $("#password").val();
         if (isEmpty(username)) {
@@ -148,7 +146,7 @@
         }
         $.ajax({
             type: "POST",
-            url: "/register", //修改为注册接口的URL
+            url: "/register", // 修改为注册接口的URL
             data: JSON.stringify({username: username, password: password}),
             contentType: "application/json",
             success: function (response) {
