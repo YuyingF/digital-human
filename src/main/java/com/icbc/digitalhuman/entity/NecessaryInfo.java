@@ -101,30 +101,28 @@ public class NecessaryInfo {
         }
     }
     public String getAllPropertiesAsString() {
-        String result="接口输入参数"+interfaceInputParameters+",  \r\n"+
-                "是否支持重跑"+isRetrySupported+",  \r\n"+
-                "是否会发生中断"+isInterruptPossible+",  \r\n"+
-                "预估耗时（分钟）"+estimatedTimeInMinutes+",  \r\n"+
-                "申请类型"+applicationType+",  \r\n"+
-                "生效日期"+effectiveDate+",  \r\n"+
-                "交付日期"+deliveryDate+",  \r\n"+
-                "投产日期"+productionDate+",  \r\n"+
-                "版本"+version+",  \r\n"+
-                "中心项目标号"+centralProjectNumber+",  \r\n"+
-                "项目名称"+projectName+",  \r\n"+
-                "需求子条目"+requirementSubItem+",  \r\n"+
-                "应用"+application+",  \r\n"+
-                "批量种类"+batchCategory+",  \r\n"+
-                "批量场次"+batchSession+",  \r\n"+
-                "作业描述"+jobDescription+",  \r\n"+
-                "前提作业"+prerequisiteJob+",  \r\n"+
-                "执行频度"+executionFrequency+",  \r\n"+
-                "执行范围"+executionScope+",  \r\n";
+        String result="接口输入参数："+interfaceInputParameters+",  \r\n"+
+                "是否支持重跑："+isRetrySupported+",  \r\n"+
+                "是否会发生中断："+isInterruptPossible+",  \r\n"+
+                "预估耗时（分钟）："+estimatedTimeInMinutes+",  \r\n"+
+                "申请类型："+applicationType+",  \r\n"+
+                "生效日期："+effectiveDate+",  \r\n"+
+                "交付日期："+deliveryDate+",  \r\n"+
+                "投产日期："+productionDate+",  \r\n"+
+                "版本："+version+",  \r\n"+
+                "中心项目标号："+centralProjectNumber+",  \r\n"+
+                "项目名称："+projectName+",  \r\n"+
+                "需求子条目："+requirementSubItem+",  \r\n"+
+                "应用："+application+",  \r\n"+
+                "批量种类："+batchCategory+",  \r\n"+
+                "批量场次："+batchSession+",  \r\n"+
+                "作业描述："+jobDescription+",  \r\n"+
+                "前提作业："+prerequisiteJob+",  \r\n"+
+                "执行频度："+executionFrequency+",  \r\n"+
+                "执行范围："+executionScope+"  \r\n";
 //        System.out.println("_______________________________________");
-//        System.out.println(result);
-        System.out.println("_______________________________________");
-        result="接口输入参数:"+interfaceInputParameters;
-        System.out.println("接口输入参数:"+interfaceInputParameters);
+//        System.out.println("接口输入参数:"+interfaceInputParameters);
+//        System.out.println("_______________________________________");
         return result;
     }
 }

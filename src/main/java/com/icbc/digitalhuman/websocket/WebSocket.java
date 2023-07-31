@@ -208,6 +208,8 @@ public class WebSocket {
                 reply=reply+reply_add;
                 reply_add="empty";
             }
+            reply= replaceNewLinesWithSpace(reply);
+            message=replaceNewLinesWithSpace(message);
             ID_to_conversation.get(User_ID).setAnswer(reply);
             ID_to_conversation.get(User_ID).setQuestion(message);
             ID_to_conversation.get(User_ID).setUpdateTime(formattedDate);
@@ -297,6 +299,13 @@ public class WebSocket {
 
         HttpResponse response = httpClient.execute(post);
 
+    }
+    public static String replaceNewLinesWithSpace(String input) {
+        // 将"\r\n"替换为空格
+        String step1 = input.replaceAll("\r\n", " ");
+        // 将"\n"替换为空格
+        String step2 = step1.replaceAll("\n", " ");
+        return step2;
     }
     //2020.9.20注释了这段代码，为了解决时间延迟的问题
 //    public static void send(Session session, String message, Integer timeout) throws InterruptedException {

@@ -1,191 +1,192 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #ffffff;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
 }
-
-#front-title {
-    width: 100%;
-    height: 40px;
-    background-color: #0b013d;
-    text-align: center;
-    font-size: 30px;
-    color: #ffffff;
-    font-family: "KaiTi"
+#front-title{
+  width: 100%;
+  height: 40px;
+  background-color: #0b013d;
+  text-align: center;
+  font-size: 30px;
+  color: #ffffff;
+  font-family:"KaiTi"
 }
-
-#choose {
-    width: 350px;
-    height: 640px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-right: 0px;
-    margin-left: 0px;
-    background-color: #ffffff;
-    padding: 10px;
-    border: 1px solid #676767;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    float: left;
+#choose{
+  width: 350px;
+  height: 640px;
+  margin-top:0px;
+  margin-bottom:0px;
+  margin-right:0px;
+  margin-left:0px;
+  background-color: #ffffff;
+  padding: 10px;
+  border: 1px solid #676767;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  float: left;
 }
-
 #chatbox {
-    width: 1050px;
-    height: 640px;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-right: 0px;
-    margin-left: 0px;
-    background-color: #f7f7f7;
-    padding: 10px;
-    border: 1px solid #676767;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    float: left;
+  width: 1090px;
+  height: 640px;
+  margin-top:0px;
+  margin-bottom:0px;
+  margin-right:0px;
+  margin-left:0px;
+  background-color: #f7f7f7;
+  padding: 10px;
+  border: 1px solid #676767;
+  display: flex;
+  flex-direction: column;
+  /* text-align: center; */
+  float: left;
 }
-
 #ask {
-    width: 100%;
-    height: 20px;
-    margin-top: 550px;
-    color: #000000;
-    border: 0px solid #000000;
-    vertical-align: auto;
-    text-align: center;
-    font-family: "黑体";
-    font-size: 15px;
+  width: 100%;
+  height: 20px;
+  margin-top:550px;
+  color: #000000;
+  border: 0px solid #000000;
+  vertical-align:auto;
+  text-align: center;
+  font-family:"黑体";
+  font-size: 15px;
 }
-
 #helpful {
-    width: 150px;
-    height: 20px;
-    margin-top: 10px;
-    margin-right: 50px;
-    margin-left: 80px;
-    color: #ffffff;
-    background-color: #42e378;
-    border: 0.5px solid #8d8b8b;
-    box-shadow: 1px 1px 10px #42e378;
-    vertical-align: auto;
-    text-align: center;
-    font-family: "黑体";
-    font-size: 15px;
-
-    border-radius: 10px;
+  width: 150px;
+  height: 20px;
+  margin-top:10px;
+  margin-right: 50px;
+  margin-left: 80px;
+  color: #ffffff;
+  background-color: #42e378;
+  border: 0.5px solid #8d8b8b;
+  box-shadow:1px 1px 10px #42e378;
+  vertical-align:auto;
+  text-align: center;
+  font-family:"黑体";
+  font-size: 15px;
+  
+  border-radius: 10px;
 }
 
 #negative {
-    width: 150px;
-    height: 20px;
-    color: #ffffff;
-    margin-top: 10px;
-    margin-right: 50px;
-    margin-left: 80px;
-    background-color: #ef4c4c;
-    box-shadow: 1px 1px 10px #ef4c4c;
-    border: 0.5px solid #8d8b8b;
-    vertical-align: auto;
-    text-align: center;
-    font-family: "黑体";
-    font-size: 15px;
-    border-radius: 10px;
+  width: 150px;
+  height: 20px;
+  color: #ffffff;
+  margin-top:10px;
+  margin-right: 50px;
+  margin-left: 80px;
+  background-color: #ef4c4c;
+  box-shadow:1px 1px 10px #ef4c4c;
+  border: 0.5px solid #8d8b8b;
+  vertical-align:auto;
+  text-align: center;
+  font-family:"黑体";
+  font-size: 15px;
+  border-radius: 10px;
 }
-
 .bubble-container-left {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: row;
-    margin-bottom: 10px;
-    background-color: #ffffff;
-    flex: 1;
+  display: flex;
+  align-items: flex-start;
+  flex-direction:row;
+  margin-bottom: 10px;
+  background-color: #ffffff;
+  flex: 1;
 }
-
 .bubble-container-right {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: row-reverse;
-    margin-bottom: 10px;
-    background-color: #ffffff;
-    flex: 1;
+  display: flex;
+  align-items: flex-start;
+  flex-direction:row-reverse;
+  margin-bottom: 10px;
+  background-color: #ffffff;
+  flex: 1;
 }
-
 .bubble {
-    display: inline-block;
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 8px;
-    word-wrap: break-word;
-    /* flex: 1; */
-    text-align: left;
-    width: fit-content;
+  display: inline-block;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 8px;
+  word-wrap: break-word;
+  /* flex: 1; */
+  text-align: left;
+  width:fit-content;
 }
 
 .bubble.right {
-    background-color: #4fa763;
-    color: #000000;
-    text-align: right;
-    margin-left: 400px;
-    margin-right: 0px;
-    max-width: 40%;
+  background-color: #4fa763;
+  color: #000000;
+  text-align: left;
+  margin-left: 400px;
+  margin-right: 0px;
+  max-width:40%;
 }
 
 .bubble.left {
-    background-color: #d8d8d8;
-    color: #414141;
-    text-align: left;
-    max-width: 50%;
+  background-color: #d8d8d8;
+  color: #414141;
+  text-align: left;
+  max-width:50%;
 }
 
 .avatar-container-left {
-    display: flex;
-    background-color: #ffffff;
-    align-items: flex-start;
+  display: flex;
+  background-color: #ffffff;
+  align-items: flex-start;
 }
 
 .avatar-container-right {
-    display: flex;
-    background-color: #ffffff;
-    align-items: flex-start;
+  display: flex;
+  background-color: #ffffff;
+  align-items: flex-start;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 0.5px solid #8d8b8b;
-    margin-right: 10px;
-    margin-left: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0.5px solid #8d8b8b;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 
 #message-container {
-    height: 300px;
-    overflow-y: scroll;
-    border: 1px solid #ccc;
-    margin-bottom: 0%;
-    background-color: #ffffff;
-    padding: 5px;
-    flex: 1;
+  height: 300px;
+  overflow-y: scroll;
+  border: 1px solid #ccc;
+  margin-bottom: 0%;
+  background-color: #ffffff;
+  padding: 5px;
+  flex: 1;
+  
 }
 
 #message-input {
-    border: 1px solid #272626;
-    padding: 5px;
-    margin: 10px;
-    box-shadow: 1px 1px 10px rgb(151, 150, 150);
+  border: 1px solid #272626;
+  padding: 5px;
+  margin: 10px;
+  box-shadow:1px 1px 10px rgb(151, 150, 150);
+  height: 80px; /* 调整输入框的高度 */
+  resize: none;
+   /* 添加滚动效果 */
+  white-space: pre-line;
+  font-family:"黑体";
 }
 
+
 #send-button {
-    padding: 5px;
-    margin-right: 10px;
-    margin-left: 10px;
-    border-radius: 10px;
-    box-shadow: 1px 1px 10px #55b46d;
-    background-color: #55b46d;
+  padding: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+  border-radius: 10px;
+  box-shadow:1px 1px 10px #55b46d;
+  background-color: #55b46d;
 }
+
+
 
 
 .box:hover {
-    background-color: darkgrey;
+  background-color: dark;
 }
