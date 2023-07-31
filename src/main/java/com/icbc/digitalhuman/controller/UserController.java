@@ -30,7 +30,6 @@ public class UserController {
         User user = userService.findByUsername(username);
         if (user != null) {
             if (password.equals(user.getPassword())) {
-                User.user_logging=username;
                 return ResponseEntity.ok("success");
             }
         }

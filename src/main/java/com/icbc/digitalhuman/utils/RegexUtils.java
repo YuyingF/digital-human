@@ -9,21 +9,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Regex {
+public class RegexUtils {
     private static final Map<String, String> PROPERTY_REGEX_MAP = new HashMap<>();
 
     static {
-        // 定义属性和正则表达式的映射
-        PROPERTY_REGEX_MAP.put("interfaceInputParameters", "接口输入参数[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("isRetrySupported", "是否支持重跑[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("isInterruptPossible", "是否会发生中断[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("estimatedTimeInMinutes", "预估耗时（分钟）[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("applicationType", "申请类型[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("effectiveDate", "生效日期[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("deliveryDate", "交付日期[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("productionDate", "投产日期[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("version", "版本[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("centralProjectNumber", "中心项目标号[:：](.*?)(?:\\n|$)");
+        // NecessaryInfo
+        PROPERTY_REGEX_MAP.put("centralProjectNumber", "中心项目编号[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("projectName", "项目名称[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("requirementSubItem", "需求子条目[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("application", "应用[:：](.*?)(?:\\n|$)");
@@ -34,14 +25,27 @@ public class Regex {
         PROPERTY_REGEX_MAP.put("executionFrequency", "执行频度[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("executionScope", "执行范围[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("storedProcedureInterface", "处理存过接口[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("interfaceInputParameters", "接口输入参数[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("interfaceOutputParameters", "接口输出参数[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("isRetrySupported", "是否支持重跑[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("isInterruptPossible", "是否会发生中断[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("estimatedTime", "预估耗时[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("applicationType", "申请类型[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("effectiveDate", "生效日期[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("deliveryDate", "交付日期[:：](.*?)(?:\\n|$)");
+
+        // UnnecessaryInfo
+        PROPERTY_REGEX_MAP.put("version", "版本[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("jobId", "作业id[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("jobName", "作业名称[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("executionFrequencyDescription", "执行频度补充说明[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("executionScopeDescription", "执行范围说明[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("inputParameterDescription", "接口输入参数补充说明[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("outputParameters", "接口输出参数[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("interruptionSolution", "中断解决方案[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("productionDate", "投产日期[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("upstreamApplication", "上游应用[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("fileInterfaceName", "文件接口名[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("isFileStructureChanged", "文件结构是否变化[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("jobName", "作业名称[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("executionFrequencyDescription", "执行频度补充说明[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("upstreamApplicationChineseName", "上游应用文本中文名[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("isTemporaryTableFieldsRequired", "临时表字段是否需要处[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("hasLegacyFiles", "是否有存量文件[:：](.*?)(?:\\n|$)");
@@ -52,13 +56,16 @@ public class Regex {
         PROPERTY_REGEX_MAP.put("downstreamApplication", "下游应用[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("downstreamTargetInterface", "下游目标接口[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("downstreamContact", "下游联系人[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("downstreamPointToPointTransmission", "下游点对点传输接收信[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("downstreamFileTransferMethod", "下游文件传输方式[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("downstreamPointToPointTransmission", "下游点对点传输接收信[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("developmentTeamDescription", "开发组补充说明[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("applicant", "申请人[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("applicationTime", "申请时间[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("executionScopeDescription", "执行范围说明[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("versionLibrary", "版本库[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("programList", "程序清单[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("fileApplicationType", "文件所属应用类型[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("distributedJobName", "分布式作业名称[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("distributedJobExecutionTime", "分布式作业执行时间[:：](.*?)(?:\\n|$)");
     }
+
 
     public static InfoAndText extractInfo(InfoAndText infoAndText) {
         NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
@@ -75,7 +82,6 @@ public class Regex {
             infoAndText.setUnnecessaryInfo(unnecessaryInfo);
         }
 
-        // 提取属性值
         NecessaryInfo finalNecessaryInfo = necessaryInfo;
         UnnecessaryInfo finalUnnecessaryInfo = unnecessaryInfo;
         PROPERTY_REGEX_MAP.forEach((propertyName, regex) -> {
@@ -85,33 +91,7 @@ public class Regex {
             if (matcher.find()) {
                 String value = matcher.group(1).trim();
                 switch (propertyName) {
-                    case "interfaceInputParameters":
-                        finalNecessaryInfo.setInterfaceInputParameters(value);
-                        break;
-                    case "isRetrySupported":
-                        finalNecessaryInfo.setIsRetrySupported(value);
-                        break;
-                    case "isInterruptPossible":
-                        finalNecessaryInfo.setIsInterruptPossible(value);
-                        break;
-                    case "estimatedTimeInMinutes":
-                        finalNecessaryInfo.setEstimatedTimeInMinutes(value);
-                        break;
-                    case "applicationType":
-                        finalNecessaryInfo.setApplicationType(value);
-                        break;
-                    case "effectiveDate":
-                        finalNecessaryInfo.setEffectiveDate(value);
-                        break;
-                    case "deliveryDate":
-                        finalNecessaryInfo.setDeliveryDate(value);
-                        break;
-                    case "productionDate":
-                        finalNecessaryInfo.setProductionDate(value);
-                        break;
-                    case "version":
-                        finalNecessaryInfo.setVersion(value);
-                        break;
+                    // NecessaryInfo properties
                     case "centralProjectNumber":
                         finalNecessaryInfo.setCentralProjectNumber(value);
                         break;
@@ -143,16 +123,57 @@ public class Regex {
                         finalNecessaryInfo.setExecutionScope(value);
                         break;
                     case "storedProcedureInterface":
-                        finalUnnecessaryInfo.setStoredProcedureInterface(value);
+                        finalNecessaryInfo.setStoredProcedureInterface(value);
+                        break;
+                    case "interfaceInputParameters":
+                        finalNecessaryInfo.setInterfaceInputParameters(value);
+                        break;
+                    case "interfaceOutputParameters":
+                        finalNecessaryInfo.setInterfaceOutputParameters(value);
+                        break;
+                    case "isRetrySupported":
+                        finalNecessaryInfo.setIsRetrySupported(value);
+                        break;
+                    case "isInterruptPossible":
+                        finalNecessaryInfo.setIsInterruptPossible(value);
+                        break;
+                    case "estimatedTime":
+                        finalNecessaryInfo.setEstimatedTime(value);
+                        break;
+                    case "applicationType":
+                        finalNecessaryInfo.setApplicationType(value);
+                        break;
+                    case "effectiveDate":
+                        finalNecessaryInfo.setEffectiveDate(value);
+                        break;
+                    case "deliveryDate":
+                        finalNecessaryInfo.setDeliveryDate(value);
+                        break;
+
+                    // UnnecessaryInfo properties
+                    case "version":
+                        finalUnnecessaryInfo.setVersion(value);
+                        break;
+                    case "jobId":
+                        finalUnnecessaryInfo.setJobId(value);
+                        break;
+                    case "jobName":
+                        finalUnnecessaryInfo.setJobName(value);
+                        break;
+                    case "executionFrequencyDescription":
+                        finalUnnecessaryInfo.setExecutionFrequencyDescription(value);
+                        break;
+                    case "executionScopeDescription":
+                        finalUnnecessaryInfo.setExecutionScopeDescription(value);
                         break;
                     case "inputParameterDescription":
                         finalUnnecessaryInfo.setInputParameterDescription(value);
                         break;
-                    case "outputParameters":
-                        finalUnnecessaryInfo.setOutputParameters(value);
-                        break;
                     case "interruptionSolution":
                         finalUnnecessaryInfo.setInterruptionSolution(value);
+                        break;
+                    case "productionDate":
+                        finalUnnecessaryInfo.setProductionDate(value);
                         break;
                     case "upstreamApplication":
                         finalUnnecessaryInfo.setUpstreamApplication(value);
@@ -162,12 +183,6 @@ public class Regex {
                         break;
                     case "isFileStructureChanged":
                         finalUnnecessaryInfo.setIsFileStructureChanged(value);
-                        break;
-                    case "jobName":
-                        finalUnnecessaryInfo.setJobName(value);
-                        break;
-                    case "executionFrequencyDescription":
-                        finalUnnecessaryInfo.setExecutionFrequencyDescription(value);
                         break;
                     case "upstreamApplicationChineseName":
                         finalUnnecessaryInfo.setUpstreamApplicationChineseName(value);
@@ -199,23 +214,33 @@ public class Regex {
                     case "downstreamContact":
                         finalUnnecessaryInfo.setDownstreamContact(value);
                         break;
-                    case "downstreamPointToPointTransmission":
-                        finalUnnecessaryInfo.setDownstreamPointToPointTransmission(value);
-                        break;
                     case "downstreamFileTransferMethod":
                         finalUnnecessaryInfo.setDownstreamFileTransferMethod(value);
+                        break;
+                    case "downstreamPointToPointTransmission":
+                        finalUnnecessaryInfo.setDownstreamPointToPointTransmission(value);
                         break;
                     case "developmentTeamDescription":
                         finalUnnecessaryInfo.setDevelopmentTeamDescription(value);
                         break;
-                    case "applicant":
-                        finalUnnecessaryInfo.setApplicant(value);
+                    case "versionLibrary":
+                        finalUnnecessaryInfo.setVersionLibrary(value);
                         break;
-                    case "applicationTime":
-                        finalUnnecessaryInfo.setApplicationTime(value);
+                    case "programList":
+                        finalUnnecessaryInfo.setProgramList(value);
                         break;
-                    case "executionScopeDescription":
-                        finalUnnecessaryInfo.setExecutionScopeDescription(value);
+                    case "fileApplicationType":
+                        finalUnnecessaryInfo.setFileApplicationType(value);
+                        break;
+                    case "distributedJobName":
+                        finalUnnecessaryInfo.setDistributedJobName(value);
+                        break;
+                    case "distributedJobExecutionTime":
+                        finalUnnecessaryInfo.setDistributedJobExecutionTime(value);
+                        break;
+
+                    // Ignore unknown properties
+                    default:
                         break;
                 }
             }

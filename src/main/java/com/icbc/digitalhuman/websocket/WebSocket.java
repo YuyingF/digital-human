@@ -6,40 +6,29 @@ import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
 import com.icbc.digitalhuman.mapper.ConversationMapper;
-import com.icbc.digitalhuman.utils.CreatSQLCode;
-import com.icbc.digitalhuman.utils.Regex;
-import org.json.JSONObject;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.icbc.digitalhuman.utils.DateUtils;
+import com.icbc.digitalhuman.utils.FormatUtils;
+import com.icbc.digitalhuman.utils.RegexUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
-
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import static com.icbc.digitalhuman.entity.User.user_logging;
-import static com.icbc.digitalhuman.utils.WriteReport.writeReport;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 
 @ServerEndpoint("/test-one")
 @Component
@@ -48,8 +37,8 @@ public class WebSocket {
     private static Map<String, Session> clients = new ConcurrentHashMap<>();
 
     private static Map<String, Conversation> ID_to_conversation = new ConcurrentHashMap<>();
-    private static int user_state=0;//1 进入审批阶段 2进入确认阶段
-    private static int modify_flag=0;
+    private static int user_state = 0;//1 进入审批阶段 2进入确认阶段
+    private static int modify_flag = 0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     //synchronize的对象需要是final
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
@@ -57,6 +46,7 @@ public class WebSocket {
 
     @Resource
     ConversationMapper conversationMapper;
+
     /**
      * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      * 在外部可以获取此连接的所有websocket对象，并能对其触发消息发送功能，我们的定时发送核心功能的实现在与此变量
@@ -79,15 +69,15 @@ public class WebSocket {
         //将新用户存入在线的组
         clients.put(session.getId(), session);
         Conversation conversation = new Conversation();
-        ID_to_conversation.put(session.getId(),conversation);
+        ID_to_conversation.put(session.getId(), conversation);
         idle.add(session);
         //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
-        System.out.println(User.user_logging+"正在登录");
+        System.out.println(User.username + "正在登录");
 
-        ID_to_conversation.get(session.getId()).setId(User.user_logging);
+        ID_to_conversation.get(session.getId()).setId(User.username);
         ID_to_conversation.get(session.getId()).setFeedback(1);
-        ID_to_conversation.get(session.getId()).setAnswer(User.user_logging+"你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：预估耗时（分钟）:20");
-        sendMessageToOneUser(session.getId(), User.user_logging+"你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
+        ID_to_conversation.get(session.getId()).setAnswer(User.username + "你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：预估耗时（分钟）:20");
+        sendMessageToOneUser(session.getId(), User.username + "你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
         sendMessageToOneUser(session.getId(), "预估耗时（分钟）:20");
     }
 
@@ -131,68 +121,71 @@ public class WebSocket {
     public void onMessage(String message, Session session) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
-        String reply_add="empty";
-        String user_request="0";
+        String user_request = "0";
         NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
         UnnecessaryInfo unnecessaryInfo = infoAndText.getUnnecessaryInfo();
         String formattedDate = formatter.format(date);
-        user_request=Conversation.judge_user_desire(message);
+        user_request = Conversation.judge_user_desire(message);
         String User_ID = session.getId();
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
-        if(message.charAt(0)=='#') {
+        if (message.charAt(0) == '#') {
 
-            if (message.equals("#good")){
+            if (message.equals("#good")) {
                 System.out.println(message);
                 sendMessageToOneUser(User_ID, "已收到您的好评，感谢您的评价");
                 ID_to_conversation.get(User_ID).setFeedback(1);
-            }
-            else if(message.equals("#bad")){
+            } else if (message.equals("#bad")) {
                 System.out.println(message);
                 sendMessageToOneUser(User_ID, "已收到您的差评，我们会努力改进我们的服务");
                 ID_to_conversation.get(User_ID).setFeedback(0);
             }
 
-        }
-        else{
-            String reply="";
-            if(user_request.equals("2")){
-                reply="您好，有什么可以帮助您的吗";
+        } else {
+            String reply = "";
+            String info = "";
+            if (user_request.equals("2")) {
+                reply = "您好，有什么可以帮助您的吗";
             }
-            if(user_request.equals("1")&&user_state==0)
-            {
-                reply="检测到您似乎准备进行批量作业，请输入相应的参数，以便我进行处理";
-                user_state=1;
+            if (user_request.equals("1") && user_state == 0) {
+                reply = "检测到您似乎准备进行批量作业，请输入相应的参数，以便我进行处理";
+                user_state = 1;
             }
-            if(user_state==1&&user_request.equals("0")){
+            if (user_state == 1 && user_request.equals("0")) {
                 infoAndText.setText(message);
-                infoAndText = Regex.extractInfo(infoAndText);
+                infoAndText = RegexUtils.extractInfo(infoAndText);
                 necessaryInfo = infoAndText.getNecessaryInfo();
                 unnecessaryInfo = infoAndText.getUnnecessaryInfo();
-                if(necessaryInfo.checkAllFilled() == "全部属性都有值"&&modify_flag==0){
-                    reply = "已收到您的消息，" + necessaryInfo.checkAllFilled()+"，以下是本次作业的全部汇总，请回复没问题/有问题";
-                    reply_add=necessaryInfo.getAllPropertiesAsString()+unnecessaryInfo.getAllPropertiesAsString();
-                    user_state=2;
-                }
-                else if(modify_flag==1){
-                    reply="以下是您修改后的内容，请回复没问题/有问题";
-                    reply_add=necessaryInfo.getAllPropertiesAsString()+unnecessaryInfo.getAllPropertiesAsString();
-                    user_state=2;
-                }
-                else{
-                    reply = "已收到您的消息，"+ necessaryInfo.checkAllFilled()+"请继续补充";
+
+                DateUtils dateUtils = new DateUtils();
+                dateUtils.setVersionAndProductionDate();
+                String version = dateUtils.getVersion();
+                String productionDate = dateUtils.getProductionDate();
+                unnecessaryInfo.setVersion(version);
+                unnecessaryInfo.setProductionDate(productionDate);
+
+                info = FormatUtils.formatInfo(necessaryInfo, unnecessaryInfo);
+
+                if ("全部必填项均有值".equals(necessaryInfo.checkAllFilled()) && modify_flag == 0) {
+                    reply = "已收到您的消息，" + necessaryInfo.checkAllFilled() + "，请仔细阅读后回复没问题或有问题";
+                    user_state = 2;
+                } else if (modify_flag == 1) {
+                    reply = "以下是您修改后的内容，请回复没问题或有问题";
+                    user_state = 2;
+                } else {
+                    reply = "已收到您的消息，" + necessaryInfo.checkAllFilled() + "请继续补充";
                 }
             }
 
-            if(user_state==2&&user_request=="3"){
-                reply="好的，您提交的审批已全部记录，祝您工作愉快。";
-                String code = CreatSQLCode.WriteSQLCode(necessaryInfo, unnecessaryInfo);
-                modify_flag=0;
-                user_state=0;
+            if (user_state == 2 && user_request == "3") {
+                reply = "好的，您提交的审批已全部记录，祝您工作愉快。";
+//                String code = CreatSQLCode.WriteSQLCode(necessaryInfo, unnecessaryInfo);
+                modify_flag = 0;
+                user_state = 0;
             }
-            if(user_state==2&&user_request=="4"){
-                reply="好的，请您再次提交您想要修改的部分";
-                modify_flag=1;
-                user_state=1;
+            if (user_state == 2 && user_request == "4") {
+                reply = "好的，请您再次提交您想要修改的部分";
+                modify_flag = 1;
+                user_state = 1;
             }
 
             //存入数据库
@@ -203,13 +196,12 @@ public class WebSocket {
             }
 
             sendMessageToOneUser(User_ID, reply);
-            if(reply_add.equals("empty")==false){
-                sendMessageToOneUser(User_ID, reply_add);
-                reply=reply+reply_add;
-                reply_add="empty";
+            if (info != "") {
+                sendMessageToOneUser(User_ID, info);
             }
-            reply= replaceNewLinesWithSpace(reply);
-            message=replaceNewLinesWithSpace(message);
+
+            reply = replaceNewLinesWithSpace(reply);
+            message = replaceNewLinesWithSpace(message);
             ID_to_conversation.get(User_ID).setAnswer(reply);
             ID_to_conversation.get(User_ID).setQuestion(message);
             ID_to_conversation.get(User_ID).setUpdateTime(formattedDate);
@@ -218,7 +210,6 @@ public class WebSocket {
         }
 //        writeReport(formattedDate + "服务器收到客户端消息：\r\n", "conversionLog\\123.txt");
 //        writeReport(message + "\r\n", "conversionLog\\123.txt");
-
 
 
 //        writeReport(formattedDate + "服务器回复消息：\r\n", "conversionLog\\123.txt");
@@ -278,16 +269,16 @@ public class WebSocket {
         }
     }
 
-    public static void save_to_database(Conversation conversation) throws IOException{
-        String url="http://localhost:8080/index/feedback";//调用的接口地址
+    public static void save_to_database(Conversation conversation) throws IOException {
+        String url = "http://localhost:8080/index/feedback";//调用的接口地址
         String id = conversation.getId();
         String question = conversation.getQuestion();
         String answer = conversation.getAnswer();
-        int feedback= conversation.getFeedback();
-        String updateTime=conversation.getUpdateTime();
+        int feedback = conversation.getFeedback();
+        String updateTime = conversation.getUpdateTime();
         System.out.println("____________________________________________________");
         System.out.println("向数据库接口发送的json为：");
-        String param="{"+"\"username\""+":"+"\""+id+"\""+","+"\"question\""+":"+"\""+question+"\""+","+"\"answer\""+":"+"\""+answer+"\""+","+"\"feedback\""+":"+feedback+"}";
+        String param = "{" + "\"username\"" + ":" + "\"" + id + "\"" + "," + "\"question\"" + ":" + "\"" + question + "\"" + "," + "\"answer\"" + ":" + "\"" + answer + "\"" + "," + "\"feedback\"" + ":" + feedback + "}";
         System.out.println(param);
         System.out.println("____________________________________________________");
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -300,6 +291,7 @@ public class WebSocket {
         HttpResponse response = httpClient.execute(post);
 
     }
+
     public static String replaceNewLinesWithSpace(String input) {
         // 将"\r\n"替换为空格
         String step1 = input.replaceAll("\r\n", " ");
@@ -348,5 +340,4 @@ public class WebSocket {
 //            send(session, message, timeout - 100);
 //        }
 //    }
-
 }
