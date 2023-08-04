@@ -6,10 +6,14 @@ body {
   width: 100%;
   height: 40px;
   background-color: #0b013d;
-  text-align: center;
-  font-size: 30px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 27px;
   color: #ffffff;
-  font-family:"KaiTi"
+  display: flex;
+  font-family:"KaiTi";
+  background-image: linear-gradient(135.28150622704527deg, rgba(42, 39, 107,1) 34.87810418722971%,rgb(202, 217, 234) 66.40804351315722%)
+  /* background-image: linear-gradient(135.28150622704527deg, rgba(42, 39, 107,1) 34.87810418722971%,rgba(186, 213, 241,1) 66.40804351315722%) */
 }
 #choose{
   width: 350px;
@@ -20,26 +24,30 @@ body {
   margin-left:0px;
   background-color: #ffffff;
   padding: 10px;
-  border: 1px solid #676767;
+  border: 0.5px solid #656466;
   display: flex;
   flex-direction: column;
   text-align: center;
   float: left;
+  background-image: linear-gradient(175.81871180525047deg, rgba(42, 39, 107,1) 6.556970529837519%,rgba(255, 255, 255,1) 16.825067209920416%)
+  /* background-image: linear-gradient(174.80556881731286deg, rgba(42, 39, 107,1) 10.391286494073505%,rgba(186, 213, 241,1) 21.724530488492285%) */
 }
 #chatbox {
-  width: 1090px;
+  width: 1100px;
   height: 640px;
   margin-top:0px;
   margin-bottom:0px;
   margin-right:0px;
   margin-left:0px;
-  background-color: #f7f7f7;
+  background-color: #ffffff;
   padding: 10px;
   border: 1px solid #676767;
   display: flex;
   flex-direction: column;
   /* text-align: center; */
   float: left;
+  background-image:linear-gradient(173.2303788827644deg, rgba(42, 39, 107,1) 3.2694370177731757%,rgba(255, 255, 255,1) 10.722520472004064%)
+  /* background-image: linear-gradient(167.92541594033844deg, rgba(42, 39, 107,1) 5.177479692310783%,rgba(186, 213, 241,1) 13.343163716143161%) */
 }
 #ask {
   width: 100%;
@@ -59,9 +67,9 @@ body {
   margin-right: 50px;
   margin-left: 80px;
   color: #ffffff;
-  background-color: #42e378;
+  background-color: #4fa763;
   border: 0.5px solid #8d8b8b;
-  box-shadow:1px 1px 10px #42e378;
+  box-shadow:1px 1px 10px #4fa763;
   vertical-align:auto;
   text-align: center;
   font-family:"黑体";
@@ -77,8 +85,8 @@ body {
   margin-top:10px;
   margin-right: 50px;
   margin-left: 80px;
-  background-color: #ef4c4c;
-  box-shadow:1px 1px 10px #ef4c4c;
+  background-color: #8e8a8a;
+  box-shadow:1px 1px 10px #8e8a8a;
   border: 0.5px solid #8d8b8b;
   vertical-align:auto;
   text-align: center;
@@ -91,7 +99,7 @@ body {
   align-items: flex-start;
   flex-direction:row;
   margin-bottom: 10px;
-  background-color: #ffffff;
+  background-color:rgba(255, 255, 255, 0);
   flex: 1;
 }
 .bubble-container-right {
@@ -99,7 +107,7 @@ body {
   align-items: flex-start;
   flex-direction:row-reverse;
   margin-bottom: 10px;
-  background-color: #ffffff;
+  background-color:rgba(255, 255, 255, 0);
   flex: 1;
 }
 .bubble {
@@ -123,7 +131,7 @@ body {
 }
 
 .bubble.left {
-  background-color: #d8d8d8;
+  background-color: #f4f1f1;
   color: #414141;
   text-align: left;
   max-width:50%;
@@ -131,13 +139,13 @@ body {
 
 .avatar-container-left {
   display: flex;
-  background-color: #ffffff;
+  background-color:rgba(255, 255, 255, 0);
   align-items: flex-start;
 }
 
 .avatar-container-right {
   display: flex;
-  background-color: #ffffff;
+  background-color:rgba(255, 255, 255, 0);
   align-items: flex-start;
 }
 
@@ -145,6 +153,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  background-color:rgba(255, 255, 255, 0);
   border: 0.5px solid #8d8b8b;
   margin-right: 10px;
   margin-left: 10px;
@@ -156,9 +165,13 @@ body {
   overflow-y: scroll;
   border: 1px solid #ccc;
   margin-bottom: 0%;
-  background-color: #ffffff;
+  background-color:rgba(255, 255, 255, 0);
   padding: 5px;
   flex: 1;
+  background-image: url("image/chat_backgrond.png");
+  background-size:40% auto;
+  background-position: center;
+  background-repeat:no-repeat
   
 }
 
@@ -166,6 +179,7 @@ body {
   border: 1px solid #272626;
   padding: 5px;
   margin: 10px;
+  background-color:rgba(255, 255, 255, 0.1);
   box-shadow:1px 1px 10px rgb(151, 150, 150);
   height: 80px; /* 调整输入框的高度 */
   resize: none;
@@ -180,8 +194,8 @@ body {
   margin-right: 10px;
   margin-left: 10px;
   border-radius: 10px;
-  box-shadow:1px 1px 10px #55b46d;
-  background-color: #55b46d;
+  box-shadow:1px 1px 10px #4fa763;
+  background-color: #4fa763;
 }
 
 

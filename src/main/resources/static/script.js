@@ -72,7 +72,7 @@ function addMessageToChat(message, direction) {
   
     var avatar = document.createElement('img');
     avatar.className = 'avatar';
-    avatar.src = 'img/left.png';
+    avatar.src = 'image/left.png';
     bubbleContainer.appendChild(avatarContainer);
     bubbleContainer.appendChild(bubble);
 
@@ -91,7 +91,7 @@ function addMessageToChat(message, direction) {
   
     var avatar = document.createElement('img');
     avatar.className = 'avatar';
-    avatar.src = 'img/right.png';
+    avatar.src = 'image/right.png';
 
     avatarContainer.appendChild(avatar);
     messageContainer.appendChild(bubbleContainer);
