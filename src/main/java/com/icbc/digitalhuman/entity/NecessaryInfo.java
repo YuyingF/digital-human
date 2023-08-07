@@ -94,8 +94,8 @@ public class NecessaryInfo {
         }
 
         if (missingFields.length() > 0) {
-            missingFields.deleteCharAt(missingFields.length() - 2); // 移除最后的逗号和空格
-            return "缺少以下必填项: " + missingFields.toString() + "，";
+            System.out.println(missingFields.toString());
+            return "缺少以下必填项: " + missingFields.toString();
         } else {
             return "全部必填项均有值";
         }
