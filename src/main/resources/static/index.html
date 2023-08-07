@@ -1,6 +1,32 @@
+<!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <title>工小信</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
 <body>
-<h1>hello word!!!</h1>
-<p>this is a html page</p>
+  <div id="front-title">
+    <!-- <div style="max-width: 45px; max-height: 45px; margin-top:7px;;text-align: left;margin-left:50px; align-items: center;">
+      <img src="img/front_logo.png" alt="Logo" style="max-width: 100%; max-height: 100%;">
+    </div> -->
+    <div style="flex: 1; text-align: left;margin-left:80px">统一资源申请系统</div>
+    <div style="max-width: 110px; max-height: 110px; margin-top:7px;;text-align: right;margin-right:50px; align-items: center;">
+      <img src="image/logo.png" alt="Logo" style="max-width: 100%; max-height: 100%;">
+    </div>
+  </div>
+  <div id="choose">
+    <div id="ask">本次对话是否对您有帮助？</div>
+    <div id="helpful" onclick="sendMessage('#good')">是的，有帮助</div>
+    <div id="negative" onclick="sendMessage('#bad')">不，没有帮助</div>
+  </div>
+  <div id="chatbox">
+    <div id="message-container"></div>
+    <textarea type="text" id="message-input" placeholder="输入消息"></textarea>
+    <button id="send-button">发送 (Shitf+Enter)</button>
+    
+  </div>
+  
+  <script src="script.js"></script>
 </body>
 </html>

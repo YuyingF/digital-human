@@ -9,5 +9,4 @@ class DigitalHumanApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
