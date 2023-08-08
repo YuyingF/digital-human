@@ -1,14 +1,12 @@
 package com.icbc.digitalhuman.websocket;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.Conversation;
-import com.icbc.digitalhuman.entity.NecessaryInfo;
-import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
 import com.icbc.digitalhuman.service.ConversationService;
 import com.icbc.digitalhuman.utils.ApplicationContextRegister;
 import com.icbc.digitalhuman.utils.DateUtils;
-import com.icbc.digitalhuman.utils.FormatUtils;
 import com.icbc.digitalhuman.utils.RegexUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -46,10 +44,10 @@ public class WebSocket {
         //将新用户存入在线的组
         clients.put(session.getId(), session);
         idle.add(session);
-        //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
+        //sendMessageAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
         System.out.println(User.username + "正在登录");
-        send(session.getId(), User.username + "你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
-        send(session.getId(), "预估耗时（分钟）:20");
+        sendMessage(session.getId(), User.username + "你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
+        sendMessage(session.getId(), "预估耗时（分钟）:20");
     }
 
     /**
@@ -92,38 +90,35 @@ public class WebSocket {
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
 
         String reply = "";
-        String info = "";
 
         // 说明规则
         if (user_state == 0 && user_request == "1") {
             reply = "检测到您似乎准备进行批量作业，请输入相应的参数，以便我进行处理";
             user_state = 1;
-        }
-        // 填写信息
-        if (user_state == 1 && user_request == "0") {
-            infoAndText.setText(message);
-            infoAndText = RegexUtils.extractInfo(infoAndText);
-            NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
-            UnnecessaryInfo unnecessaryInfo = infoAndText.getUnnecessaryInfo();
 
             DateUtils dateUtils = new DateUtils();
             dateUtils.setVersionAndProductionDate();
             String version = dateUtils.getVersion();
             String productionDate = dateUtils.getProductionDate();
-            unnecessaryInfo.setVersion(version);
-            unnecessaryInfo.setProductionDate(productionDate);
-
-            info = FormatUtils.formatInfo(necessaryInfo, unnecessaryInfo);
-
-            if (necessaryInfo.checkAllFilled().equals("全部必填项均有值") && modify_flag == 0) {
-                reply = "已收到您的消息，" + necessaryInfo.checkAllFilled() + "，请仔细阅读后回复没问题或有问题";
+            infoAndText.getUnnecessaryInfo().setVersion(version);
+            infoAndText.getUnnecessaryInfo().setProductionDate(productionDate);
+            sendEntity(User_ID, infoAndText);
+        }
+        // 填写信息
+        if (user_state == 1 && user_request == "0") {
+            infoAndText.setText(message);
+            infoAndText = RegexUtils.extractInfo(infoAndText);
+            String checkResult = infoAndText.getNecessaryInfo().checkAllFilled();
+            if (checkResult.equals("全部必填项均有值") && modify_flag == 0) {
+                reply = "已收到您的消息，" + checkResult + "，请仔细阅读后回复没问题或有问题";
                 user_state = 2;
             } else if (modify_flag == 1) {
                 reply = "以下是您修改后的内容，请回复没问题或有问题";
                 user_state = 2;
             } else {
-                reply = "已收到您的消息，" + necessaryInfo.checkAllFilled() + "请继续补充";
+                reply = "已收到您的消息，" + checkResult + "请继续补充";
             }
+            sendEntity(User_ID, infoAndText);
         }
         // 修改信息
         if (user_state == 2 && user_request == "4") {
@@ -131,12 +126,12 @@ public class WebSocket {
             modify_flag = 1;
             user_state = 1;
         }
-        // 请求打分
+        // 请求评价
         if (user_state == 2 && user_request == "3") {
             reply = "请您对本次服务进行评分（1-10分）并留下您的意见或建议";
             user_state = 3;
         }
-        // 打分阶段
+        // 保存评价
         if (user_state == 3 && user_request == "0") {
             int evaluation = RegexUtils.extractEvaluation(message); // 提取评分
             String feedback = RegexUtils.extractFeedback(message); // 提取留言
@@ -158,26 +153,35 @@ public class WebSocket {
                 reply = "请您对本次服务进行评分（1-10分）并留下您的意见或建议：";
             }
         }
-
-        send(User_ID, reply);
-        if (info != "") {
-            send(User_ID, info);
-        }
+        sendMessage(User_ID, reply);
     }
 
     /**
-     * 推送消息到指定用户
+     * 推送消息
      *
      * @param userId  用户ID
      * @param message 发送的消息
      */
-    public static void send(String userId, String message) {
+    public static void sendMessage(String userId, String message) {
         Session session = clients.get(userId);
         try {
             session.getBasicRemote().sendText(message);
         } catch (IOException e) {
             System.out.println("错误！！\r\n链接" + userId + "发送失败");
         }
+    }
 
+    /**
+     * 推送实体
+     */
+    public static void sendEntity(String userId, InfoAndText infoAndText) {
+        Session session = clients.get(userId);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String infoAndTextJson = objectMapper.writeValueAsString(infoAndText);
+            session.getBasicRemote().sendText(infoAndTextJson);
+        } catch (IOException e) {
+            System.out.println("错误！！\r\n链接" + userId + "发送失败");
+        }
     }
 }
