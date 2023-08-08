@@ -8,6 +8,8 @@ import java.util.Map;
 @Data
 public class NecessaryInfo {
 
+    // 版本
+    public String version;
     // 中心项目编号
     public String centralProjectNumber;
     // 项目名称
@@ -71,7 +73,6 @@ public class NecessaryInfo {
         PROPERTY_NAME_MAP.put("applicationType", "申请类型");
         PROPERTY_NAME_MAP.put("effectiveDate", "生效日期");
         PROPERTY_NAME_MAP.put("deliveryDate", "交付日期");
-        PROPERTY_NAME_MAP.put("productionDate", "投产日期");
     }
 
     public String checkAllFilled() {

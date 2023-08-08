@@ -5,8 +5,6 @@ import lombok.Data;
 @Data
 public class UnnecessaryInfo {
 
-    // 版本
-    public String version;
     // 作业id
     public String jobId;
     // 作业名称

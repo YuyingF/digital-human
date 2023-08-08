@@ -14,6 +14,7 @@ public class RegexUtils {
 
     static {
         // NecessaryInfo
+        PROPERTY_REGEX_MAP.put("version", "版本[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("centralProjectNumber", "中心项目编号[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("projectName", "项目名称[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("requirementSubItem", "需求子条目[:：](.*?)(?:\\n|$)");
@@ -36,7 +37,6 @@ public class RegexUtils {
         PROPERTY_REGEX_MAP.put("productionDate", "投产日期[:：](.*?)(?:\\n|$)");
 
         // UnnecessaryInfo
-        PROPERTY_REGEX_MAP.put("version", "版本[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("jobId", "作业id[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("jobName", "作业名称[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("executionFrequencyDescription", "执行频度补充说明[:：](.*?)(?:\\n|$)");
@@ -71,18 +71,6 @@ public class RegexUtils {
         UnnecessaryInfo unnecessaryInfo = infoAndText.getUnnecessaryInfo();
         String text = infoAndText.getText();
 
-        if (necessaryInfo == null) {
-            necessaryInfo = new NecessaryInfo();
-            infoAndText.setNecessaryInfo(necessaryInfo);
-        }
-
-        if (unnecessaryInfo == null) {
-            unnecessaryInfo = new UnnecessaryInfo();
-            infoAndText.setUnnecessaryInfo(unnecessaryInfo);
-        }
-
-        NecessaryInfo finalNecessaryInfo = necessaryInfo;
-        UnnecessaryInfo finalUnnecessaryInfo = unnecessaryInfo;
         PROPERTY_REGEX_MAP.forEach((propertyName, regex) -> {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(text);
@@ -91,151 +79,151 @@ public class RegexUtils {
                 String value = matcher.group(1).trim();
                 switch (propertyName) {
                     // NecessaryInfo properties
+                    case "version":
+                        necessaryInfo.setVersion(value);
+                        break;
                     case "centralProjectNumber":
-                        finalNecessaryInfo.setCentralProjectNumber(value);
+                        necessaryInfo.setCentralProjectNumber(value);
                         break;
                     case "projectName":
-                        finalNecessaryInfo.setProjectName(value);
+                        necessaryInfo.setProjectName(value);
                         break;
                     case "requirementSubItem":
-                        finalNecessaryInfo.setRequirementSubItem(value);
+                        necessaryInfo.setRequirementSubItem(value);
                         break;
                     case "application":
-                        finalNecessaryInfo.setApplication(value);
+                        necessaryInfo.setApplication(value);
                         break;
                     case "batchCategory":
-                        finalNecessaryInfo.setBatchCategory(value);
+                        necessaryInfo.setBatchCategory(value);
                         break;
                     case "batchSession":
-                        finalNecessaryInfo.setBatchSession(value);
+                        necessaryInfo.setBatchSession(value);
                         break;
                     case "jobDescription":
-                        finalNecessaryInfo.setJobDescription(value);
+                        necessaryInfo.setJobDescription(value);
                         break;
                     case "prerequisiteJob":
-                        finalNecessaryInfo.setPrerequisiteJob(value);
+                        necessaryInfo.setPrerequisiteJob(value);
                         break;
                     case "executionFrequency":
-                        finalNecessaryInfo.setExecutionFrequency(value);
+                        necessaryInfo.setExecutionFrequency(value);
                         break;
                     case "executionScope":
-                        finalNecessaryInfo.setExecutionScope(value);
+                        necessaryInfo.setExecutionScope(value);
                         break;
                     case "storedProcedureInterface":
-                        finalNecessaryInfo.setStoredProcedureInterface(value);
+                        necessaryInfo.setStoredProcedureInterface(value);
                         break;
                     case "interfaceInputParameters":
-                        finalNecessaryInfo.setInterfaceInputParameters(value);
+                        necessaryInfo.setInterfaceInputParameters(value);
                         break;
                     case "interfaceOutputParameters":
-                        finalNecessaryInfo.setInterfaceOutputParameters(value);
+                        necessaryInfo.setInterfaceOutputParameters(value);
                         break;
                     case "isRetrySupported":
-                        finalNecessaryInfo.setIsRetrySupported(value);
+                        necessaryInfo.setIsRetrySupported(value);
                         break;
                     case "isInterruptPossible":
-                        finalNecessaryInfo.setIsInterruptPossible(value);
+                        necessaryInfo.setIsInterruptPossible(value);
                         break;
                     case "estimatedTime":
-                        finalNecessaryInfo.setEstimatedTime(value);
+                        necessaryInfo.setEstimatedTime(value);
                         break;
                     case "applicationType":
-                        finalNecessaryInfo.setApplicationType(value);
+                        necessaryInfo.setApplicationType(value);
                         break;
                     case "effectiveDate":
-                        finalNecessaryInfo.setEffectiveDate(value);
+                        necessaryInfo.setEffectiveDate(value);
                         break;
                     case "deliveryDate":
-                        finalNecessaryInfo.setDeliveryDate(value);
+                        necessaryInfo.setDeliveryDate(value);
                         break;
                     case "productionDate":
-                        finalNecessaryInfo.setProductionDate(value);
+                        necessaryInfo.setProductionDate(value);
                         break;
 
                     // UnnecessaryInfo properties
-                    case "version":
-                        finalUnnecessaryInfo.setVersion(value);
-                        break;
                     case "jobId":
-                        finalUnnecessaryInfo.setJobId(value);
+                        unnecessaryInfo.setJobId(value);
                         break;
                     case "jobName":
-                        finalUnnecessaryInfo.setJobName(value);
+                        unnecessaryInfo.setJobName(value);
                         break;
                     case "executionFrequencyDescription":
-                        finalUnnecessaryInfo.setExecutionFrequencyDescription(value);
+                        unnecessaryInfo.setExecutionFrequencyDescription(value);
                         break;
                     case "executionScopeDescription":
-                        finalUnnecessaryInfo.setExecutionScopeDescription(value);
+                        unnecessaryInfo.setExecutionScopeDescription(value);
                         break;
                     case "inputParameterDescription":
-                        finalUnnecessaryInfo.setInputParameterDescription(value);
+                        unnecessaryInfo.setInputParameterDescription(value);
                         break;
                     case "interruptionSolution":
-                        finalUnnecessaryInfo.setInterruptionSolution(value);
+                        unnecessaryInfo.setInterruptionSolution(value);
                         break;
                     case "upstreamApplication":
-                        finalUnnecessaryInfo.setUpstreamApplication(value);
+                        unnecessaryInfo.setUpstreamApplication(value);
                         break;
                     case "fileInterfaceName":
-                        finalUnnecessaryInfo.setFileInterfaceName(value);
+                        unnecessaryInfo.setFileInterfaceName(value);
                         break;
                     case "isFileStructureChanged":
-                        finalUnnecessaryInfo.setIsFileStructureChanged(value);
+                        unnecessaryInfo.setIsFileStructureChanged(value);
                         break;
                     case "upstreamApplicationChineseName":
-                        finalUnnecessaryInfo.setUpstreamApplicationChineseName(value);
+                        unnecessaryInfo.setUpstreamApplicationChineseName(value);
                         break;
                     case "isTemporaryTableFieldsRequired":
-                        finalUnnecessaryInfo.setIsTemporaryTableFieldsRequired(value);
+                        unnecessaryInfo.setIsTemporaryTableFieldsRequired(value);
                         break;
                     case "hasLegacyFiles":
-                        finalUnnecessaryInfo.setHasLegacyFiles(value);
+                        unnecessaryInfo.setHasLegacyFiles(value);
                         break;
                     case "upstreamTextDescription":
-                        finalUnnecessaryInfo.setUpstreamTextDescription(value);
+                        unnecessaryInfo.setUpstreamTextDescription(value);
                         break;
                     case "upstreamContact":
-                        finalUnnecessaryInfo.setUpstreamContact(value);
+                        unnecessaryInfo.setUpstreamContact(value);
                         break;
                     case "upstreamFileTransferMethod":
-                        finalUnnecessaryInfo.setUpstreamFileTransferMethod(value);
+                        unnecessaryInfo.setUpstreamFileTransferMethod(value);
                         break;
                     case "upstreamPointToPointTransmission":
-                        finalUnnecessaryInfo.setUpstreamPointToPointTransmission(value);
+                        unnecessaryInfo.setUpstreamPointToPointTransmission(value);
                         break;
                     case "downstreamApplication":
-                        finalUnnecessaryInfo.setDownstreamApplication(value);
+                        unnecessaryInfo.setDownstreamApplication(value);
                         break;
                     case "downstreamTargetInterface":
-                        finalUnnecessaryInfo.setDownstreamTargetInterface(value);
+                        unnecessaryInfo.setDownstreamTargetInterface(value);
                         break;
                     case "downstreamContact":
-                        finalUnnecessaryInfo.setDownstreamContact(value);
+                        unnecessaryInfo.setDownstreamContact(value);
                         break;
                     case "downstreamFileTransferMethod":
-                        finalUnnecessaryInfo.setDownstreamFileTransferMethod(value);
+                        unnecessaryInfo.setDownstreamFileTransferMethod(value);
                         break;
                     case "downstreamPointToPointTransmission":
-                        finalUnnecessaryInfo.setDownstreamPointToPointTransmission(value);
+                        unnecessaryInfo.setDownstreamPointToPointTransmission(value);
                         break;
                     case "developmentTeamDescription":
-                        finalUnnecessaryInfo.setDevelopmentTeamDescription(value);
+                        unnecessaryInfo.setDevelopmentTeamDescription(value);
                         break;
                     case "versionLibrary":
-                        finalUnnecessaryInfo.setVersionLibrary(value);
+                        unnecessaryInfo.setVersionLibrary(value);
                         break;
                     case "programList":
-                        finalUnnecessaryInfo.setProgramList(value);
+                        unnecessaryInfo.setProgramList(value);
                         break;
                     case "fileApplicationType":
-                        finalUnnecessaryInfo.setFileApplicationType(value);
+                        unnecessaryInfo.setFileApplicationType(value);
                         break;
                     case "distributedJobName":
-                        finalUnnecessaryInfo.setDistributedJobName(value);
+                        unnecessaryInfo.setDistributedJobName(value);
                         break;
                     case "distributedJobExecutionTime":
-                        finalUnnecessaryInfo.setDistributedJobExecutionTime(value);
+                        unnecessaryInfo.setDistributedJobExecutionTime(value);
                         break;
 
                     // Ignore unknown properties

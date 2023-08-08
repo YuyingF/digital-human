@@ -3,6 +3,8 @@ package com.icbc.digitalhuman.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.Conversation;
+import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
 import com.icbc.digitalhuman.service.ConversationService;
 import com.icbc.digitalhuman.utils.ApplicationContextRegister;
@@ -44,7 +46,7 @@ public class WebSocket {
         //将新用户存入在线的组
         clients.put(session.getId(), session);
         idle.add(session);
-        //sendMessageAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
+        //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
         System.out.println(User.username + "正在登录");
         sendMessage(session.getId(), User.username + "你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
         sendMessage(session.getId(), "预估耗时（分钟）:20");
@@ -96,12 +98,18 @@ public class WebSocket {
             reply = "检测到您似乎准备进行批量作业，请输入相应的参数，以便我进行处理";
             user_state = 1;
 
+            NecessaryInfo necessaryInfo = new NecessaryInfo();
+            UnnecessaryInfo unnecessaryInfo = new UnnecessaryInfo();
+            infoAndText.setNecessaryInfo(necessaryInfo);
+            infoAndText.setUnnecessaryInfo(unnecessaryInfo);
+
             DateUtils dateUtils = new DateUtils();
             dateUtils.setVersionAndProductionDate();
             String version = dateUtils.getVersion();
             String productionDate = dateUtils.getProductionDate();
-            infoAndText.getUnnecessaryInfo().setVersion(version);
-            infoAndText.getUnnecessaryInfo().setProductionDate(productionDate);
+            necessaryInfo.setVersion(version);
+            necessaryInfo.setProductionDate(productionDate);
+
             sendEntity(User_ID, infoAndText);
         }
         // 填写信息
@@ -141,7 +149,7 @@ public class WebSocket {
                 Conversation conversation = new Conversation();
                 conversation.setEvaluation(evaluation);
                 conversation.setFeedback(feedback);
-                conversation.setUsername(User.username);
+//                conversation.setUsername(User.username);
                 ApplicationContext act = ApplicationContextRegister.getApplicationContext();
                 ConversationService conversationService = act.getBean(ConversationService.class);
                 conversationService.create(conversation);
