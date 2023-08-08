@@ -46,6 +46,8 @@ public class NecessaryInfo {
     public String effectiveDate;
     // 交付日期
     public String deliveryDate;
+    // 投产日期
+    public String productionDate;
 
     private static final Map<String, String> PROPERTY_NAME_MAP = new HashMap<>();
 
@@ -69,6 +71,7 @@ public class NecessaryInfo {
         PROPERTY_NAME_MAP.put("applicationType", "申请类型");
         PROPERTY_NAME_MAP.put("effectiveDate", "生效日期");
         PROPERTY_NAME_MAP.put("deliveryDate", "交付日期");
+        PROPERTY_NAME_MAP.put("productionDate", "投产日期");
     }
 
     public String checkAllFilled() {

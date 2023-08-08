@@ -33,6 +33,7 @@ public class RegexUtils {
         PROPERTY_REGEX_MAP.put("applicationType", "申请类型[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("effectiveDate", "生效日期[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("deliveryDate", "交付日期[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("productionDate", "投产日期[:：](.*?)(?:\\n|$)");
 
         // UnnecessaryInfo
         PROPERTY_REGEX_MAP.put("version", "版本[:：](.*?)(?:\\n|$)");
@@ -42,7 +43,6 @@ public class RegexUtils {
         PROPERTY_REGEX_MAP.put("executionScopeDescription", "执行范围说明[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("inputParameterDescription", "接口输入参数补充说明[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("interruptionSolution", "中断解决方案[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("productionDate", "投产日期[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("upstreamApplication", "上游应用[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("fileInterfaceName", "文件接口名[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("isFileStructureChanged", "文件结构是否变化[:：](.*?)(?:\\n|$)");
@@ -65,7 +65,6 @@ public class RegexUtils {
         PROPERTY_REGEX_MAP.put("distributedJobName", "分布式作业名称[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("distributedJobExecutionTime", "分布式作业执行时间[:：](.*?)(?:\\n|$)");
     }
-
 
     public static InfoAndText extractInfo(InfoAndText infoAndText) {
         NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
@@ -149,6 +148,9 @@ public class RegexUtils {
                     case "deliveryDate":
                         finalNecessaryInfo.setDeliveryDate(value);
                         break;
+                    case "productionDate":
+                        finalNecessaryInfo.setProductionDate(value);
+                        break;
 
                     // UnnecessaryInfo properties
                     case "version":
@@ -171,9 +173,6 @@ public class RegexUtils {
                         break;
                     case "interruptionSolution":
                         finalUnnecessaryInfo.setInterruptionSolution(value);
-                        break;
-                    case "productionDate":
-                        finalUnnecessaryInfo.setProductionDate(value);
                         break;
                     case "upstreamApplication":
                         finalUnnecessaryInfo.setUpstreamApplication(value);

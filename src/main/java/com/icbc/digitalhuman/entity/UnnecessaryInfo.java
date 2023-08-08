@@ -19,8 +19,6 @@ public class UnnecessaryInfo {
     public String inputParameterDescription;
     // 中断解决方案
     public String interruptionSolution;
-    // 投产日期
-    public String productionDate;
     // 上游应用
     public String upstreamApplication;
     // 文件接口名
