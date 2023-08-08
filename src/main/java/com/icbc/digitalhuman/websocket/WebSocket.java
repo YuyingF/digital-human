@@ -6,12 +6,13 @@ import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
 import com.icbc.digitalhuman.service.ConversationService;
+import com.icbc.digitalhuman.utils.ApplicationContextRegister;
 import com.icbc.digitalhuman.utils.DateUtils;
 import com.icbc.digitalhuman.utils.FormatUtils;
 import com.icbc.digitalhuman.utils.RegexUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -30,9 +31,6 @@ public class WebSocket {
     private static int modify_flag = 0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
-
-    @Resource
-    ConversationService conversationService;
 
     InfoAndText infoAndText = new InfoAndText();
 
@@ -138,7 +136,7 @@ public class WebSocket {
             reply = "请您对本次服务进行评分（1-10分）并留下您的意见或建议";
             user_state = 3;
         }
-        // 感谢阶段
+        // 打分阶段
         if (user_state == 3 && user_request == "0") {
             int evaluation = RegexUtils.extractEvaluation(message); // 提取评分
             String feedback = RegexUtils.extractFeedback(message); // 提取留言
@@ -149,6 +147,8 @@ public class WebSocket {
                 conversation.setEvaluation(evaluation);
                 conversation.setFeedback(feedback);
                 conversation.setUsername(User.username);
+                ApplicationContext act = ApplicationContextRegister.getApplicationContext();
+                ConversationService conversationService = act.getBean(ConversationService.class);
                 conversationService.create(conversation);
                 // 提示用户感谢并重置状态
                 reply = "感谢您的评价和留言，祝您工作愉快！";
