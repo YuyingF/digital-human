@@ -2,11 +2,14 @@ package com.icbc.digitalhuman.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class DateUtils {
     private String version;
     private String productionDate;
+    private String effectiveDate;
 
     public String getVersion() {
         return version;
@@ -24,7 +27,15 @@ public class DateUtils {
         this.productionDate = productionDate;
     }
 
-    public void setVersionAndProductionDate() {
+    public String getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public void setEffectiveDate(String effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
+
+    public void setDate() {
         Date currentDate = new Date();
 
         // 设置日期的最小值，确保选择的日期大于当前日期
@@ -67,6 +78,11 @@ public class DateUtils {
             SimpleDateFormat productionDateFormat = new SimpleDateFormat("yyyy/MM/dd");
             String productionDateString = productionDateFormat.format(nextDate);
             setProductionDate(productionDateString);
+
+            // 设置effectiveDate属性为productionDate的后一天
+            LocalDate productionLocalDate = LocalDate.parse(productionDateString, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+            LocalDate effectiveLocalDate = productionLocalDate.plusDays(1);
+            setEffectiveDate(effectiveLocalDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
         }
     }
 

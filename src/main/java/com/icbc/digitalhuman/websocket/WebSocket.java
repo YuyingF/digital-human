@@ -2,15 +2,13 @@ package com.icbc.digitalhuman.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.icbc.digitalhuman.dto.InfoAndText;
-import com.icbc.digitalhuman.entity.Conversation;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
-import com.icbc.digitalhuman.service.ConversationService;
-import com.icbc.digitalhuman.utils.ApplicationContextRegister;
 import com.icbc.digitalhuman.utils.DateUtils;
 import com.icbc.digitalhuman.utils.RegexUtils;
-import org.springframework.context.ApplicationContext;
+
+import com.icbc.digitalhuman.utils.SqlUtils;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -27,7 +25,7 @@ import java.util.concurrent.Future;
 //@Service
 public class WebSocket {
     private static Map<String, Session> clients = new ConcurrentHashMap<>();
-    private static int user_state = 0;//1 填写阶段 2 修改阶段 3 评分阶段
+    private static int user_state = 0;//1 填写阶段 2 修改阶段 3 感谢阶段
     private static int modify_flag = 0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
@@ -100,15 +98,18 @@ public class WebSocket {
 
             NecessaryInfo necessaryInfo = new NecessaryInfo();
             UnnecessaryInfo unnecessaryInfo = new UnnecessaryInfo();
+
+            DateUtils dateUtils = new DateUtils();
+            dateUtils.setDate();
+            necessaryInfo.setVersion(dateUtils.getVersion());
+            necessaryInfo.setProductionDate(dateUtils.getProductionDate());
+            necessaryInfo.setEffectiveDate(dateUtils.getEffectiveDate());
+
             infoAndText.setNecessaryInfo(necessaryInfo);
             infoAndText.setUnnecessaryInfo(unnecessaryInfo);
 
-            DateUtils dateUtils = new DateUtils();
-            dateUtils.setVersionAndProductionDate();
-            String version = dateUtils.getVersion();
-            String productionDate = dateUtils.getProductionDate();
-            necessaryInfo.setVersion(version);
-            necessaryInfo.setProductionDate(productionDate);
+            System.out.println("开始的时候" + infoAndText.getNecessaryInfo().getProductionDate());
+            System.out.println("------------------------------");
 
             sendEntity(User_ID, infoAndText);
         }
@@ -134,33 +135,13 @@ public class WebSocket {
             modify_flag = 1;
             user_state = 1;
         }
-        // 请求评价
+        // 感谢服务
         if (user_state == 2 && user_request == "3") {
-            reply = "请您对本次服务进行评分（1-10分）并留下您的意见或建议";
-            user_state = 3;
+            reply = "本次批量申请任务已完成";
+            user_state = 0;
+            SqlUtils.toSql(infoAndText);
         }
-        // 保存评价
-        if (user_state == 3 && user_request == "0") {
-            int evaluation = RegexUtils.extractEvaluation(message); // 提取评分
-            String feedback = RegexUtils.extractFeedback(message); // 提取留言
 
-            if (evaluation >= 1 && evaluation <= 10) {
-                // 用户输入合法的评分，记录评分和留言
-                Conversation conversation = new Conversation();
-                conversation.setEvaluation(evaluation);
-                conversation.setFeedback(feedback);
-//                conversation.setUsername(User.username);
-                ApplicationContext act = ApplicationContextRegister.getApplicationContext();
-                ConversationService conversationService = act.getBean(ConversationService.class);
-                conversationService.create(conversation);
-                // 提示用户感谢并重置状态
-                reply = "感谢您的评价和留言，祝您工作愉快！";
-                user_state = 0;
-            } else {
-                // 用户输入的评分不合法，重新提示
-                reply = "请您对本次服务进行评分（1-10分）并留下您的意见或建议：";
-            }
-        }
         sendMessage(User_ID, reply);
     }
 

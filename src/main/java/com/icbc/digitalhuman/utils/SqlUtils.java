@@ -3,19 +3,24 @@ package com.icbc.digitalhuman.utils;
 import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.BatchWorkDef;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.User;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SqlUtils {
-    public BatchWorkDef infoToBatchWorkDef(InfoAndText infoAndText, String username) {
+    public static BatchWorkDef infoToBatchWorkDef(InfoAndText infoAndText) {
         BatchWorkDef batchWorkDef = new BatchWorkDef();
         NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
 
         String executionScope = necessaryInfo.getExecutionScope();
-        List<Integer> groupCode = batchWorkDef.getGroupCode();
+        List<Integer> groupCode = new ArrayList<>();
         if (executionScope.contains("境内")) {
             groupCode.add(1);
         }
@@ -25,8 +30,10 @@ public class SqlUtils {
         if (executionScope.contains("个人委托")) {
             groupCode.add(5);
         }
+        batchWorkDef.setGroupCode(groupCode);
 
         String productionDate = necessaryInfo.getProductionDate();
+        System.out.println("sql" + productionDate);
         LocalDate productionLocalDate = LocalDate.parse(productionDate, DateTimeFormatter.ofPattern("yyyy/M/d"));
         int year = productionLocalDate.getYear();
         int month = productionLocalDate.getMonthValue();
@@ -49,8 +56,7 @@ public class SqlUtils {
             workInterval = "Y";
         }
 
-        LocalDate workNowTime = productionLocalDate.plusDays(1);
-        batchWorkDef.setWorkNowTime(workNowTime.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        batchWorkDef.setWorkNowTime(necessaryInfo.getEffectiveDate());
 
         // workSeq
         // workInitType;
@@ -60,13 +66,15 @@ public class SqlUtils {
         // workParaNum;
         // workParamMode;
 
-        String notes = formattedYear + formattedMonth + "_" + username + "_DH_" + necessaryInfo.getRequirementSubItem();
+        String notes = formattedYear + formattedMonth + "_" + User.username + "_DH_" + necessaryInfo.getRequirementSubItem();
         batchWorkDef.setNotes(notes);
 
         return batchWorkDef;
     }
 
-    public static String batchWorkDefToSql(BatchWorkDef batchWorkDef) {
+    public static void toSql(InfoAndText infoAndText) {
+        BatchWorkDef batchWorkDef = infoToBatchWorkDef(infoAndText);
+
         StringBuilder sqlBuilder = new StringBuilder();
 
         List<Integer> groupCodeList = batchWorkDef.getGroupCode();
@@ -79,7 +87,12 @@ public class SqlUtils {
             sqlBuilder.append(insert(batchWorkDef, null)).append("\n");
         }
 
-        return sqlBuilder.toString();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(batchWorkDef.getNotes()))) {
+            writer.write(sqlBuilder.toString());
+            System.out.println("SQL script generated successfully.");
+        } catch (IOException e) {
+            System.err.println("Error generating SQL script: " + e.getMessage());
+        }
     }
 
     private static String insert(BatchWorkDef batchWorkDef, Integer groupCode) {
