@@ -17,8 +17,6 @@ public class UnnecessaryInfo {
     public String inputParameterDescription;
     // 中断解决方案
     public String interruptionSolution;
-    // 上游应用
-    public String upstreamApplication;
     // 文件接口名
     public String fileInterfaceName;
     // 文件结构是否变化

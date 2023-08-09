@@ -62,7 +62,7 @@ public class SqlUtils {
         // workInitType;
         // workInitProc;
 
-        // workProcName;
+        batchWorkDef.setWorkProcName(necessaryInfo.getStoredProcedureInterface());
         // workParaNum;
         // workParamMode;
 
