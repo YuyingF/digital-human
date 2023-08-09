@@ -7,7 +7,6 @@ import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
 import com.icbc.digitalhuman.utils.DateUtils;
 import com.icbc.digitalhuman.utils.RegexUtils;
-
 import com.icbc.digitalhuman.utils.SqlUtils;
 import org.springframework.stereotype.Component;
 
