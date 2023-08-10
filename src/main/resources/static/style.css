@@ -279,3 +279,32 @@ td {
   color: red;
   margin-left: 2px;
 }
+
+/* 日期按钮样式 */
+.date-button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start; /* 修改为从左向右对齐 */
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  margin-left:80px;
+}
+
+/* 日期按钮样式 */
+.date-button {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.date-button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}

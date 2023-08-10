@@ -19,7 +19,7 @@ public class NecessaryInfo {
     // 应用
     public String application;
     // 批量种类
-    public String batchCategory;
+    public String batchCategory = "1";
     // 批量场次
     public String batchSession;
     // 作业描述

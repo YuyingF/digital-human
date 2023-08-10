@@ -25,12 +25,11 @@ import java.util.concurrent.Future;
 //@Service
 public class WebSocket {
     private static Map<String, Session> clients = new ConcurrentHashMap<>();
-    private static int user_state = 0;
+    private static int user_state = 0;  // 0 登录 1 填写开始 2 完成必填
     private static int modify_flag = 0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
     InfoAndText infoAndText = new InfoAndText();
-
     private HttpSession httpSession;
     private String username; // 保存用户名的成员变量
 
@@ -54,7 +53,7 @@ public class WebSocket {
             // 用户已登录
             username = user.getUsername();  // 保存用户名到成员变量
             System.out.println(username + "正在登录");
-            sendMessage(session.getId(), username + "您好，欢迎提交批量申请表，请选择您希望的投产日期。");
+            sendMessage(session.getId(), username + "您好，欢迎提交批量申请表，请选择所需的投产日期，如都不满意，请在输入框内发送您期望的日期。");
             sendMessage(session.getId(), DateUtils.chooseProductionDate());
         } else {
             // 用户未登录
@@ -100,7 +99,7 @@ public class WebSocket {
     @OnMessage
     public void onMessage(String message, Session session) {
 
-        String user_request = RegexUtils.judge_user_desire(message);
+        int user_request = RegexUtils.messageJudgement(message);
 
         String User_ID = session.getId();
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
@@ -108,53 +107,52 @@ public class WebSocket {
         String reply = "";
 
         // 说明规则
-        if (user_state == 0 && user_request == "1") {
-            reply = "检测到您似乎准备进行批量作业，请输入相应的参数，以便我进行处理";
+        if (user_state == 0 && user_request == 1) {
+            reply = "请依据表格进行提交数据，星号为必填项，我们为您生成了一些默认值，如需修改，请直接覆盖即可。" +
+                    "填写规则为“字段：内容”，不同字段之间请换行。";
             user_state = 1;
 
             NecessaryInfo necessaryInfo = new NecessaryInfo();
             UnnecessaryInfo unnecessaryInfo = new UnnecessaryInfo();
 
             DateUtils dateUtils = new DateUtils();
-//            dateUtils.setDate();
-//            necessaryInfo.setVersion(dateUtils.getVersion());
-//            necessaryInfo.setProductionDate(dateUtils.getProductionDate());
-//            necessaryInfo.setEffectiveDate(dateUtils.getEffectiveDate());
+            necessaryInfo.setVersion(dateUtils.setVersion(message));
+            necessaryInfo.setProductionDate(message);
+            necessaryInfo.setEffectiveDate(dateUtils.setEffectiveDate(message));
 
             infoAndText.setNecessaryInfo(necessaryInfo);
             infoAndText.setUnnecessaryInfo(unnecessaryInfo);
 
-            System.out.println("开始的时候" + infoAndText.getNecessaryInfo().getProductionDate());
-            System.out.println("------------------------------");
-
             sendEntity(User_ID, infoAndText);
         }
         // 填写信息
-        if (user_state == 1 && user_request == "0") {
+        if (user_state == 1 && user_request == 0) {
             infoAndText.setText(message);
             infoAndText = RegexUtils.extractInfo(infoAndText);
             String checkResult = infoAndText.getNecessaryInfo().checkAllFilled();
             if (checkResult.equals("全部必填项均有值") && modify_flag == 0) {
-                reply = "已收到您的消息，" + checkResult + "，请仔细阅读后回复没问题或有问题";
+                reply = "已收到您的消息，" + checkResult + "，请问是否提交？";
                 user_state = 2;
             } else if (modify_flag == 1) {
-                reply = "以下是您修改后的内容，请回复没问题或有问题";
+                reply = "以下是您修改后的内容，请问是否提交？";
                 user_state = 2;
             } else {
-                reply = "已收到您的消息，" + checkResult + "请继续补充";
+                reply = "已收到您的消息，" + checkResult + "请继续补充。";
             }
             sendEntity(User_ID, infoAndText);
         }
         // 修改信息
-        if (user_state == 2 && user_request == "4") {
-            reply = "好的，请您再次提交您想要修改的部分";
+        if (user_state == 2 && user_request == 2) {
+            reply = "好的，请输入您想要修改的部分";
             modify_flag = 1;
             user_state = 1;
         }
         // 感谢服务
-        if (user_state == 2 && user_request == "3") {
-            reply = "本次批量申请任务已完成。";
+        if (user_state == 2 && user_request == 3) {
+            reply = "#123";
+            sendMessage(User_ID, "本次批量申请任务已完成,请对我们的服务进行评分并留下您宝贵的意见。");
             user_state = 0;
+            modify_flag = 0;
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
         }

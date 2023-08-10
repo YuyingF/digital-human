@@ -4,6 +4,7 @@ import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -235,35 +236,28 @@ public class RegexUtils {
         return infoAndText;
     }
 
-    public static String judge_user_desire(String input) {
-        //0代表什么都没读到
-        //1代表用户要审批
-        //2代表打招呼
-        //3代表用户确认ok
-        int hello_flag = 0;
-        int job_request_flag = 0;
-        int confirm_flag = 0;
-        if (input.contains("你好") || input.contains("您好")) {
-            hello_flag = 1;
+    public static int messageJudgement(String message) {
+        // 1 投产日期
+        // 2 确认提交
+        // 3 继续修改
+        if (isDate(message)) {
+            return 1;
+        } else if (message.equals("否")) {
+            return 2;
+        } else if (message.equals("是")) {
+            return 3;
         }
-        if (input.contains("要审批") || input.contains("要提交")) {
-            job_request_flag = 1;
+        return 0;
+    }
+
+    public static boolean isDate(String input) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            sdf.setLenient(false);
+            sdf.parse(input);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        if (input.equals("没问题")) {
-            confirm_flag = 1;
-        }
-        if (input.equals("有问题")) {
-            confirm_flag = 2;
-        }
-        if (job_request_flag == 1) {
-            return "1";
-        } else if (confirm_flag == 1) {
-            return "3";
-        } else if (confirm_flag == 2) {
-            return "4";
-        } else if (hello_flag == 1) {
-            return "2";
-        }
-        return "0";
     }
 }
