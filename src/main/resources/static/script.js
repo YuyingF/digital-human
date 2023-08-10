@@ -2,11 +2,12 @@ var messageContainer = document.getElementById('message-container');
 var messageInput = document.getElementById('message-input');
 var sendButton = document.getElementById('send-button');
 var websocket;
-
-window.addEventListener('load', function() {
+var savedUsername;
+var already_show_star_flag = 0;
+window.addEventListener('load', function () {
   connectWebSocket();
 
-  sendButton.addEventListener('click', function() {
+  sendButton.addEventListener('click', function () {
     var message = messageInput.value;
 
     if (message.trim() !== '') {
@@ -16,34 +17,59 @@ window.addEventListener('load', function() {
     }
   });
 
-  messageInput.addEventListener('keydown', function(event) {
+  messageInput.addEventListener('keydown', function (event) {
     if (event.keyCode === 13 && event.shiftKey) {
       event.preventDefault();
       sendButton.click();
     }
     else if (event.keyCode === 13) {
       messageInput.value += '\n';
-   }
+    }
   });
 });
 
 function connectWebSocket() {
   websocket = new WebSocket('ws://localhost:8080/test-one');
 
-  websocket.onopen = function() {
+  websocket.onopen = function () {
     console.log('WebSocket连接已打开');
   };
 
-  websocket.onmessage = function(event) {
+  websocket.onmessage = function (event) {
     var message = event.data;
-    addMessageToChat(message, 'left');
+    var parsedData = null;
+    try {
+      parsedData = JSON.parse(message);
+    } catch (error) {
+      parsedData = null;
+    }
+    //判断是否需要弹出反馈框
+    if (message == "#123") {
+      if (already_show_star_flag == 0) {
+        moveFirstRowToLast();
+        showRatingModule();
+        already_show_star_flag = 1;
+      }
+    }
+    
+    //判断是否需要弹出
+    else if (parsedData) {
+      // 如果成功解析成 JSON，创建表格并添加到聊天界面
+      var tableContainer = createTableFromJSON(parsedData);
+      messageContainer.appendChild(tableContainer);
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    } 
+    else {
+      // 否则按照原本的气泡效果处理
+      addMessageToChat(message, 'left');
+    }
   };
 
-  websocket.onclose = function() {
+  websocket.onclose = function () {
     console.log('WebSocket连接已关闭');
   };
 
-  websocket.onerror = function() {
+  websocket.onerror = function () {
     console.error('WebSocket连接发生错误');
   };
 }
@@ -57,19 +83,16 @@ function sendMessage(message) {
 
 
 function addMessageToChat(message, direction) {
-  
-
 
   if (direction === 'left') {
     var bubbleContainer = document.createElement('div');
-  bubbleContainer.className = 'bubble-container-left';
-
-  var bubble = document.createElement('div');
-  bubble.className = 'bubble ' + direction;
-  bubble.textContent = message;
+    bubbleContainer.className = 'bubble-container-left';
+    var bubble = document.createElement('div');
+    bubble.className = 'bubble ' + direction;
+    bubble.textContent = message;
     var avatarContainer = document.createElement('div');
     avatarContainer.className = 'avatar-container-left';
-  
+
     var avatar = document.createElement('img');
     avatar.className = 'avatar';
     avatar.src = 'image/left.png';
@@ -88,7 +111,7 @@ function addMessageToChat(message, direction) {
     bubble.textContent = message;
     var avatarContainer = document.createElement('div');
     avatarContainer.className = 'avatar-container-right';
-  
+
     var avatar = document.createElement('img');
     avatar.className = 'avatar';
     avatar.src = 'image/right.png';
@@ -99,9 +122,166 @@ function addMessageToChat(message, direction) {
 
     bubbleContainer.appendChild(avatarContainer);
     bubbleContainer.appendChild(bubble);
-    
-    
+
+
   }
 
-  
+
 }
+let lockedStars = 0;
+let hoverStars = 0;
+
+function toggleLock(stars) {
+  lockedStars = stars;
+
+
+  const allStars = document.querySelectorAll('.stars');
+  allStars.forEach((star, index) => {
+    if (index < lockedStars) {
+      star.style.color = 'gold';
+    } else {
+      star.style.color = '#ccc';
+    }
+  });
+}
+
+function hoverRating(stars) {
+  if (lockedStars === 0) {
+    hoverStars = stars;
+    const allStars = document.querySelectorAll('.stars');
+    allStars.forEach((star, index) => {
+      if (index < stars) {
+        star.style.color = 'gold';
+      } else {
+        star.style.color = '#ccc';
+      }
+    });
+  }
+}
+const ratingModule = document.getElementById('rating-module');
+function showRatingModule() {
+  ratingModule.style.display = 'block';
+}
+
+function moveFirstRowToLast() {
+  const container = document.getElementById('message-container'); // 替换为你的容器ID
+  const children = Array.from(container.children);
+
+  const firstRowHeight = children[0].offsetHeight;
+
+  // 计算需要移动的元素数量
+  let elementsToMove = 0;
+  let currentHeight = 0;
+
+  for (let i = 0; i < children.length; i++) {
+    if (currentHeight + children[i].offsetHeight > firstRowHeight) {
+      elementsToMove = i;
+      break;
+    }
+    currentHeight += children[i].offsetHeight;
+  }
+
+  // 移动元素
+  if (elementsToMove > 0) {
+    for (let i = 0; i < elementsToMove; i++) {
+      container.appendChild(children[i]);
+    }
+  }
+}
+
+async function sendFeedback() {
+  const url = 'http://localhost:8080/index/feedback';
+  var selectedStars = lockedStars || hoverStars;
+  var evaluateInput = document.getElementById('evaluate-input');
+  const message = evaluateInput.value;
+  const Conversation = {
+    evaluation: selectedStars,
+    feedback: message,
+    username:savedUsername
+  };
+  // sendMessage(message);
+  const requestOptions = {
+    method: 'POST',
+    // mode: 'no-cors',
+    headers: {
+      "Content-Type": "application/json;charset=utf-8"
+    },
+    //body: Conversation
+    body: JSON.stringify(Conversation)
+  };
+  console.log(JSON.stringify(Conversation));
+  try {
+    const response = await fetch(url, requestOptions);
+
+    if (response.ok) {
+      console.log('Feedback sent successfully!');
+    } else {
+      console.error('Failed to send feedback.');
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+function request_post() {
+  var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
+  httpRequest.open('POST', 'application/json;charset=utf-8', true); //第二步：打开连接
+  httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");//设置请求头 注：post方式必须设置请求头（在建立连接后设置请求头）
+  httpRequest.send('{"evaluation":3,"feedback":"123"}');//发送请求 将情头体写在send中
+  /**
+   * 获取数据后的处理程序
+   */
+  httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
+    if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
+      var json = httpRequest.responseText;//获取到服务端返回的数据
+      console.log(json);
+    }
+  };
+}
+function createTableFromJSON(data) {
+  var emphasizeIndicesLeft = [0, 1, 2,3,4,5,6,9,10,11,12,13,14,15,16,17,19,20,21,22,23]; // 需要加红色星号的属性在左侧表格
+  var emphasizeIndicesRight = [24]; // 需要加红色星号的属性在右侧表格
+
+  var tableContainer = document.createElement('div');
+  tableContainer.className = 'table-container';
+
+  var leftTable = document.createElement('table');
+  leftTable.innerHTML = generateTableHTML(data, 0, 23,emphasizeIndicesLeft); // 填充左侧表格数据
+  leftTable.className = 'left-table'; // 添加样式类名
+  tableContainer.appendChild(leftTable);
+
+  var spacingDiv = document.createElement('div');
+  spacingDiv.className = 'table-spacing';
+  tableContainer.appendChild(spacingDiv);
+
+  var rightTable = document.createElement('table');
+  rightTable.innerHTML = generateTableHTML(data, 24, 47,emphasizeIndicesRight); // 填充右侧表格数据
+  rightTable.className = 'right-table'; // 添加样式类名
+  tableContainer.appendChild(rightTable);
+
+  return tableContainer;
+}
+
+function generateTableHTML(data, startIndex, endIndex, emphasizeIndices) {
+  var tableHTML = '<table>';
+  for (var i = startIndex; i <= endIndex; i++) {
+    var key = Object.keys(data)[i];
+    var value = data[key];
+    
+    var shouldEmphasize = emphasizeIndices.includes(i);
+    var emphasizedKey = shouldEmphasize ? key + '<span class="emphasize">*</span>' : key;
+    var valueCellContent = value !== 'null' ? value : '';
+    
+    tableHTML += '<tr><td class="attribute-cell">' + emphasizedKey + '</td><td class="value-cell">' + valueCellContent + '</td></tr>';
+  }
+  tableHTML += '</table>';
+  return tableHTML;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  var urlParams = new URLSearchParams(window.location.search);
+  savedUsername = urlParams.get("username");
+  console.log("现在登录的人是："+savedUsername);
+  if (savedUsername) {
+    console.log("Welcome, " + savedUsername + "!");
+  }
+});

@@ -17,6 +17,7 @@ public class ConversationController {
 
     @PostMapping("/feedback")
     public ResponseEntity<String> feedback(@RequestBody Conversation conversation) {
+        System.out.println("用户"+conversation.getUsername()+"发来评分");
         try {
             conversationService.create(conversation);
             return ResponseEntity.ok("success");

@@ -121,7 +121,7 @@
             data: {username: username, password: password},
             success: function (response) {
                 if (response === "success") {
-                    window.location.href = "index.html"; // 登录成功，跳转到index页面
+                    window.location.href = "index.html?username=" + encodeURIComponent(username);
                 } else {
                     $("#msg").html("用户名或密码错误，请重新输入！"); // 登录失败，显示错误提示
                 }

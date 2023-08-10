@@ -55,6 +55,7 @@ public class WebSocket {
             username = user.getUsername();  // 保存用户名到成员变量
             System.out.println(username + "正在登录");
             sendMessage(session.getId(), username + "您好，欢迎提交批量申请表，请选择您希望的投产日期。");
+            sendMessage(session.getId(),"#123");
         } else {
             // 用户未登录
             try {
@@ -182,11 +183,74 @@ public class WebSocket {
     public static void sendEntity(String userId, InfoAndText infoAndText) {
         Session session = clients.get(userId);
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String infoAndTextJson = objectMapper.writeValueAsString(infoAndText);
+            String infoAndTextJson = convertInfoAndTextToJson(infoAndText);
             session.getBasicRemote().sendText(infoAndTextJson);
         } catch (IOException e) {
             System.out.println("错误！！\r\n链接" + userId + "发送失败");
         }
     }
+    public static String convertInfoAndTextToJson(InfoAndText infoAndText) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String json = "{" +
+                "\"版本\":\"" + infoAndText.getNecessaryInfo().version + "\"," +
+                "\"中心项目编号\":\"" + infoAndText.getNecessaryInfo().centralProjectNumber + "\"," +
+                "\"项目名称\":\"" + infoAndText.getNecessaryInfo().projectName + "\"," +
+                "\"需求子条目\":\"" + infoAndText.getNecessaryInfo().requirementSubItem + "\"," +
+                "\"应用\":\"" + infoAndText.getNecessaryInfo().application + "\"," +
+                "\"批量种类\":\"" + infoAndText.getNecessaryInfo().batchCategory + "\"," +
+                "\"批量场次\":\"" + infoAndText.getNecessaryInfo().batchSession + "\"," +
+
+                "\"作业id\":\"" + infoAndText.getUnnecessaryInfo().jobId + "\"," +
+                "\"作业名称\":\"" + infoAndText.getUnnecessaryInfo().jobName + "\"," +
+
+                "\"作业描述\":\"" + infoAndText.getNecessaryInfo().jobDescription + "\"," +
+                "\"前提作业\":\"" + infoAndText.getNecessaryInfo().prerequisiteJob + "\"," +
+                "\"执行频度\":\"" + infoAndText.getNecessaryInfo().executionFrequency + "\"," +
+                "\"执行范围\":\"" + infoAndText.getNecessaryInfo().executionScope + "\"," +
+                "\"处理存过接口（程序接口）\":\"" + infoAndText.getNecessaryInfo().storedProcedureInterface + "\"," +
+                "\"接口输入参数\":\"" + infoAndText.getNecessaryInfo().interfaceInputParameters + "\"," +
+                "\"接口输出参数\":\"" + infoAndText.getNecessaryInfo().interfaceOutputParameters + "\"," +
+                "\"是否支持重跑\":\"" + infoAndText.getNecessaryInfo().isRetrySupported + "\"," +
+                "\"是否会发生中断\":\"" + infoAndText.getNecessaryInfo().isInterruptPossible + "\"," +
+
+                "\"中断解决方案\":\"" + infoAndText.getUnnecessaryInfo().interruptionSolution + "\"," +
+
+                "\"预估耗时\":\"" + infoAndText.getNecessaryInfo().estimatedTime + "\"," +
+                "\"申请类型\":\"" + infoAndText.getNecessaryInfo().applicationType + "\"," +
+                "\"生效日期\":\"" + infoAndText.getNecessaryInfo().effectiveDate + "\"," +
+                "\"交付日期\":\"" + infoAndText.getNecessaryInfo().deliveryDate + "\"," +
+                "\"投产日期\":\"" + infoAndText.getNecessaryInfo().productionDate + "\"," +
+                "\"上游应用\":\"" + infoAndText.getNecessaryInfo().upstreamApplication + "\"," +
+
+                //不必要的
+                "\"执行频度补充说明\":\"" + infoAndText.getUnnecessaryInfo().executionFrequencyDescription + "\"," +
+                "\"执行范围说明\":\"" + infoAndText.getUnnecessaryInfo().executionScopeDescription + "\"," +
+                "\"接口输入参数补充说明\":\"" + infoAndText.getUnnecessaryInfo().inputParameterDescription + "\"," +
+
+                "\"文件接口名\":\"" + infoAndText.getUnnecessaryInfo().fileInterfaceName + "\"," +
+                "\"文件结构是否变化\":\"" + infoAndText.getUnnecessaryInfo().isFileStructureChanged + "\"," +
+                "\"上游应用文本中文名\":\"" + infoAndText.getUnnecessaryInfo().upstreamApplicationChineseName + "\"," +
+                "\"临时表字段是否需要处理\":\"" + infoAndText.getUnnecessaryInfo().isTemporaryTableFieldsRequired + "\"," +
+                "\"是否有存量文件\":\"" + infoAndText.getUnnecessaryInfo().hasLegacyFiles + "\"," +
+                "\"上游文本相关说明\":\"" + infoAndText.getUnnecessaryInfo().upstreamTextDescription + "\"," +
+                "\"上游联系人\":\"" + infoAndText.getUnnecessaryInfo().upstreamContact + "\"," +
+                "\"上游文件传输方式\":\"" + infoAndText.getUnnecessaryInfo().upstreamFileTransferMethod + "\"," +
+                "\"上游点对点传输接收信息\":\"" + infoAndText.getUnnecessaryInfo().upstreamPointToPointTransmission + "\"," +
+                "\"下游应用\":\"" + infoAndText.getUnnecessaryInfo().downstreamApplication + "\"," +
+                "\"下游目标接口\":\"" + infoAndText.getUnnecessaryInfo().downstreamTargetInterface + "\"," +
+                "\"下游联系人\":\"" + infoAndText.getUnnecessaryInfo().downstreamContact + "\"," +
+                "\"下游文件传输方式\":\"" + infoAndText.getUnnecessaryInfo().downstreamFileTransferMethod + "\"," +
+                "\"下游点对点传输接收信息\":\"" + infoAndText.getUnnecessaryInfo().downstreamPointToPointTransmission + "\"," +
+                "\"开发组补充说明\":\"" + infoAndText.getUnnecessaryInfo().developmentTeamDescription + "\"," +
+                "\"版本库\":\"" + infoAndText.getUnnecessaryInfo().versionLibrary + "\"," +
+                "\"程序清单\":\"" + infoAndText.getUnnecessaryInfo().programList + "\"," +
+                "\"文件所属应用类型\":\"" + infoAndText.getUnnecessaryInfo().fileApplicationType + "\"," +
+                "\"分布式作业名称\":\"" + infoAndText.getUnnecessaryInfo().distributedJobName + "\"," +
+                "\"分布式作业执行时间\":\"" + infoAndText.getUnnecessaryInfo().distributedJobExecutionTime + "\"" +
+                "}";
+        return json;
+    }
 }
+
+
