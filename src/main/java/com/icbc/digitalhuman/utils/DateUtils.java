@@ -4,51 +4,24 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DateUtils {
-    private String version;
-    private String productionDate;
-    private String effectiveDate;
 
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getProductionDate() {
-        return productionDate;
-    }
-
-    public void setProductionDate(String productionDate) {
-        this.productionDate = productionDate;
-    }
-
-    public String getEffectiveDate() {
-        return effectiveDate;
-    }
-
-    public void setEffectiveDate(String effectiveDate) {
-        this.effectiveDate = effectiveDate;
-    }
-
-    public void setDate() {
+    public static String chooseProductionDate() {
         Date currentDate = new Date();
-
         // 设置日期的最小值，确保选择的日期大于当前日期
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         currentDate = getMinTimeOfDate(currentDate, sdf);
 
         String[] dates = {"2023/07/08", "2023/08/05", "2023/09/02", "2023/10/14", "2023/11/18", "2023/12/09"};
 
-        // 设置初始的最小日期
-        Date nextDate = null;
-        long minDifference = Long.MAX_VALUE;
+        List<Date> validDates = new ArrayList<>();
 
-        // 遍历日期列表，找到满足条件的日期
         for (String dateString : dates) {
             try {
                 Date date = sdf.parse(dateString);
@@ -59,30 +32,48 @@ public class DateUtils {
                 long difference = date.getTime() - currentDate.getTime();
 
                 // 确保选择的日期大于两周
-                if (difference > 14 * 24 * 60 * 60 * 1000 && difference < minDifference) {
-                    nextDate = date;
-                    minDifference = difference;
+                if (difference > 14 * 24 * 60 * 60 * 1000) {
+                    validDates.add(date);
+                }
+
+                // 收集到三个有效日期后停止循环
+                if (validDates.size() >= 3) {
+                    break;
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
 
-        if (nextDate != null) {
-            // 设置version属性
+        // 格式化日期，并使用 "$" 连接
+        List<String> formattedDates = validDates.stream()
+                .map(date -> "$" + sdf.format(date))
+                .collect(Collectors.toList());
+
+        return String.join("", formattedDates);
+    }
+
+    public String setVersion(String productionDate) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+            Date date = sdf.parse(productionDate);
             SimpleDateFormat versionFormat = new SimpleDateFormat("yyyyMM");
-            String versionString = versionFormat.format(nextDate);
-            setVersion(versionString);
+            return versionFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-            // 设置productionDate属性
-            SimpleDateFormat productionDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-            String productionDateString = productionDateFormat.format(nextDate);
-            setProductionDate(productionDateString);
-
-            // 设置effectiveDate属性为productionDate的后一天
-            LocalDate productionLocalDate = LocalDate.parse(productionDateString, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    public String setEffectiveDate(String productionDate) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            LocalDate productionLocalDate = LocalDate.parse(productionDate, formatter);
             LocalDate effectiveLocalDate = productionLocalDate.plusDays(1);
-            setEffectiveDate(effectiveLocalDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+            return effectiveLocalDate.format(formatter);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
