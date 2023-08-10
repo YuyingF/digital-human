@@ -3,8 +3,11 @@ package com.icbc.digitalhuman.utils;
 import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.BatchWorkDef;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
-import com.icbc.digitalhuman.entity.User;
+import com.icbc.digitalhuman.mapper.ProcInitBpcByParamodeMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,8 +17,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Component
 public class SqlUtils {
-    public static BatchWorkDef infoToBatchWorkDef(InfoAndText infoAndText) {
+
+    @Autowired
+    private ProcInitBpcByParamodeMapper procInitBpcByParamodeMapper;
+
+    //静态初始化
+    public static SqlUtils sqlUtils;
+
+    /**
+     * 加上注解@PostConstruct，这样方法就会在Bean初始化之后被Spring容器执行
+     */
+    @PostConstruct
+    public void init() {
+        sqlUtils = this;
+        sqlUtils.procInitBpcByParamodeMapper = this.procInitBpcByParamodeMapper;
+    }
+
+    public BatchWorkDef infoToBatchWorkDef(InfoAndText infoAndText, String username) {
+
+
         BatchWorkDef batchWorkDef = new BatchWorkDef();
         NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
 
@@ -63,17 +85,21 @@ public class SqlUtils {
         // workInitProc;
 
         batchWorkDef.setWorkProcName(necessaryInfo.getStoredProcedureInterface());
-        // workParaNum;
-        // workParamMode;
 
-        String notes = formattedYear + formattedMonth + "_" + User.username + "_DH_" + necessaryInfo.getRequirementSubItem();
+        String interfaceInputParameters = necessaryInfo.getInterfaceInputParameters();
+        String workParamMode = sqlUtils.procInitBpcByParamodeMapper.find(interfaceInputParameters);
+
+        batchWorkDef.setWorkParaNum(interfaceInputParameters.split("\\+").length);
+        batchWorkDef.setWorkParamMode(workParamMode);
+
+        String notes = formattedYear + formattedMonth + "_" + username + "_DH_" + necessaryInfo.getRequirementSubItem();
         batchWorkDef.setNotes(notes);
 
         return batchWorkDef;
     }
 
-    public static void toSql(InfoAndText infoAndText) {
-        BatchWorkDef batchWorkDef = infoToBatchWorkDef(infoAndText);
+    public void toSql(InfoAndText infoAndText, String username) {
+        BatchWorkDef batchWorkDef = infoToBatchWorkDef(infoAndText, username);
 
         StringBuilder sqlBuilder = new StringBuilder();
 
@@ -95,7 +121,7 @@ public class SqlUtils {
         }
     }
 
-    private static String insert(BatchWorkDef batchWorkDef, Integer groupCode) {
+    private String insert(BatchWorkDef batchWorkDef, Integer groupCode) {
         StringBuilder statementBuilder = new StringBuilder("INSERT INTO batch_work_def (GROUP_CODE, WORK_ID, " +
                 "WORK_NAME, BATCH_MODE, WORK_INTERVAL, WORK_NOWTIME, WORK_SEQ, WORK_TYPE, WORK_INIT_TYPE, " +
                 "WORK_INIT_PROC, WORK_PROCNAME, WORK_PARANUM, WORK_PARAMMODE, DATA_FLAG, COMMIT_NUM, SCALE_FLAG, " +
@@ -112,7 +138,7 @@ public class SqlUtils {
         statementBuilder.append(batchWorkDef.getWorkInitType()).append(", ");
         statementBuilder.append("'").append(batchWorkDef.getWorkInitProc()).append("', ");
         statementBuilder.append("'").append(batchWorkDef.getWorkProcName()).append("', ");
-        statementBuilder.append("'").append(batchWorkDef.getWorkParaNum()).append("', ");
+        statementBuilder.append(batchWorkDef.getWorkParaNum()).append(", ");
         statementBuilder.append("'").append(batchWorkDef.getWorkParamMode()).append("', ");
         statementBuilder.append(batchWorkDef.getDataFlag()).append(", ");
         statementBuilder.append(batchWorkDef.getCommitNum()).append(", ");
@@ -124,6 +150,4 @@ public class SqlUtils {
 
         return statementBuilder.toString();
     }
-
-
 }

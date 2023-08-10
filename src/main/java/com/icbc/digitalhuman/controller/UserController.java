@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping
@@ -26,13 +27,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam("username") String username, @RequestParam("password") String password) {
+    public ResponseEntity<String> login(@RequestParam("username") String username,
+                                        @RequestParam("password") String password,
+                                        HttpSession session) {
         User user = userService.findByUsername(username);
-        if (user != null) {
-            if (password.equals(user.getPassword())) {
-                return ResponseEntity.ok("success");
-            }
+        if (user != null && password.equals(user.getPassword())) {
+            // 存储用户对象在会话中
+            session.setAttribute("user", user);
+            return ResponseEntity.ok("success");
+        } else {
+            return ResponseEntity.ok("fail");
         }
-        return ResponseEntity.ok("fail");
     }
 }

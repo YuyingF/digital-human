@@ -35,7 +35,7 @@ public class FormatUtils {
         stringBuilder.append("生效日期：").append(necessaryInfo.getEffectiveDate()).append("；");
         stringBuilder.append("交付日期：").append(necessaryInfo.getDeliveryDate()).append("；");
         stringBuilder.append("投产日期：").append(necessaryInfo.getProductionDate()).append("；");
-        stringBuilder.append("上游应用：").append(unnecessaryInfo.getUpstreamApplication()).append("；");
+        stringBuilder.append("上游应用：").append(necessaryInfo.getUpstreamApplication()).append("；");
         stringBuilder.append("文件接口名：").append(unnecessaryInfo.getFileInterfaceName()).append("；");
         stringBuilder.append("文件结构是否变化：").append(unnecessaryInfo.getIsFileStructureChanged()).append("；");
         stringBuilder.append("上游应用文本中文名：").append(unnecessaryInfo.getUpstreamApplicationChineseName()).append("；");

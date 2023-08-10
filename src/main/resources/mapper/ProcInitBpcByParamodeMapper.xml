@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icbc.digitalhuman.mapper.ProcInitBpcByParamodeMapper">
+
+    <select id="find" resultType="java.lang.String">
+        SELECT work_paramode
+        FROM proc_init_bpc_by_paramode
+        WHERE interface_input_parameters = #{interfaceInputParameters}
+    </select>
+
+</mapper>

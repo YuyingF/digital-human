@@ -142,6 +142,9 @@ public class RegexUtils {
                     case "productionDate":
                         necessaryInfo.setProductionDate(value);
                         break;
+                    case "upstreamApplication":
+                        necessaryInfo.setUpstreamApplication(value);
+                        break;
 
                     // UnnecessaryInfo properties
                     case "jobId":
@@ -161,9 +164,6 @@ public class RegexUtils {
                         break;
                     case "interruptionSolution":
                         unnecessaryInfo.setInterruptionSolution(value);
-                        break;
-                    case "upstreamApplication":
-                        unnecessaryInfo.setUpstreamApplication(value);
                         break;
                     case "fileInterfaceName":
                         unnecessaryInfo.setFileInterfaceName(value);
@@ -265,29 +265,5 @@ public class RegexUtils {
             return "2";
         }
         return "0";
-    }
-
-    // 提取评分
-    public static int extractEvaluation(String message) {
-        int evaluation = 0;
-        // 使用正则表达式提取第一个出现的一位或两位数作为评分
-        String regex = "\\b([1-9]|10)\\b";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(message);
-        if (matcher.find()) {
-            try {
-                evaluation = Integer.parseInt(matcher.group(1));
-            } catch (NumberFormatException e) {
-                // 处理转换异常
-            }
-        }
-        return evaluation;
-    }
-
-    // 提取留言
-    public static String extractFeedback(String message) {
-        // 提取评分后的文本作为留言
-        String feedback = message.replaceAll("\\d{1,2}", "").trim();
-        return feedback;
     }
 }

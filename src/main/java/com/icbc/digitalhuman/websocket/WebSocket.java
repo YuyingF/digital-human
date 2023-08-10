@@ -10,6 +10,7 @@ import com.icbc.digitalhuman.utils.RegexUtils;
 import com.icbc.digitalhuman.utils.SqlUtils;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -19,17 +20,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 
-@ServerEndpoint("/test-one")
+@ServerEndpoint(value = "/test-one", configurator = HttpSessionConfigurator.class)
 @Component
 //@Service
 public class WebSocket {
     private static Map<String, Session> clients = new ConcurrentHashMap<>();
-    private static int user_state = 0;//1 填写阶段 2 修改阶段 3 感谢阶段
+    private static int user_state = 0;
     private static int modify_flag = 0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
-
     InfoAndText infoAndText = new InfoAndText();
+
+    private HttpSession httpSession;
+    private String username; // 保存用户名的成员变量
 
     /**
      * 客户端连接
@@ -37,16 +40,29 @@ public class WebSocket {
      * @param session
      */
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session, EndpointConfig config) {
         InetSocketAddress remoteAddress = WebSocketUtils.getRemoteAddress(session);
         System.out.println("有新的客户端连接了,ip为:" + remoteAddress + "ID为：" + session.getId());
         //将新用户存入在线的组
         clients.put(session.getId(), session);
         idle.add(session);
-        //sendAll(JSON.toJSONString(new JsonResult<Map<String, Integer>>(nodeService.getOnlineOfflineCount(), "workState")));
-        System.out.println(User.username + "正在登录");
-        sendMessage(session.getId(), User.username + "你好，我是工小妍，如果需要提交审批，请以冒号分开，例如：");
-        sendMessage(session.getId(), "预估耗时（分钟）:20");
+
+        this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        User user = (User) httpSession.getAttribute("user");
+
+        if (user != null) {
+            // 用户已登录
+            username = user.getUsername();  // 保存用户名到成员变量
+            System.out.println(username + "正在登录");
+            sendMessage(session.getId(), username + "您好，欢迎提交批量申请表，请选择您希望的投产日期。");
+        } else {
+            // 用户未登录
+            try {
+                session.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -138,7 +154,8 @@ public class WebSocket {
         if (user_state == 2 && user_request == "3") {
             reply = "本次批量申请任务已完成";
             user_state = 0;
-            SqlUtils.toSql(infoAndText);
+            SqlUtils sqlUtils = new SqlUtils();
+            sqlUtils.toSql(infoAndText, username);
         }
 
         sendMessage(User_ID, reply);

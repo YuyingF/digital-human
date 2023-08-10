@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class BatchWorkDef {
+
     List<Integer> groupCode;
     String workId;
     String workName;
@@ -17,7 +18,7 @@ public class BatchWorkDef {
     int workInitType = 0;
     String workInitProc;
     String workProcName;
-    String workParaNum;
+    int workParaNum;
     String workParamMode;
     int dataFlag = 0;
     int commitNum = 500;
