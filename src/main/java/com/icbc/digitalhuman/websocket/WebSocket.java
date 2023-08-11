@@ -168,7 +168,7 @@ public class WebSocket {
             sqlUtils.toSql(infoAndText, username);
         }
 
-        LogUtils.appendToDialog(dialog, username, message);
+        LogUtils.appendToDialog(dialog, username, reply);
     }
 
     /**
