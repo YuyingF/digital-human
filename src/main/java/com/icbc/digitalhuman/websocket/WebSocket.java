@@ -101,7 +101,7 @@ public class WebSocket {
     @OnMessage
     public void onMessage(String message, Session session) {
 
-        LogUtils.appendToDialog(dialog, "Bot", message);
+        LogUtils.appendToDialog(dialog, username, message);
         int user_request = RegexUtils.messageJudgement(message);
         String User_ID = session.getId();
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
@@ -168,7 +168,7 @@ public class WebSocket {
             sqlUtils.toSql(infoAndText, username);
         }
 
-        LogUtils.appendToDialog(dialog, username, reply);
+        LogUtils.appendToDialog(dialog, "Bot", reply);
     }
 
     /**

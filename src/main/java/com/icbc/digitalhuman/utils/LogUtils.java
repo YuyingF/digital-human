@@ -28,9 +28,9 @@ public class LogUtils {
         }
     }
 
-    public static void appendToDialog(StringBuilder dialogBuilder, String username, String message) {
+    public static void appendToDialog(StringBuilder dialogBuilder, String sender, String message) {
         String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         dialogBuilder.append("[").append(timestamp).append("] ");
-        dialogBuilder.append(username).append(": ").append(message).append("\n");
+        dialogBuilder.append(sender).append(": ").append(message).append("\n");
     }
 }
