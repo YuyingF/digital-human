@@ -158,7 +158,7 @@ public class WebSocket {
         }
         // 感谢服务
         if (user_state == 2 && user_request == 3) {
-            reply = "本次批量申请任务已完成,请对我们的服务进行评分并留下您宝贵的意见。";
+            reply = "本次批量申请任务已完成,请您对我们的服务进行评分并留下宝贵的意见。";
             sendMessage(User_ID, reply);
             sendMessage(User_ID, "#123");
             LogUtils.appendToDialog(dialog, username, reply);
