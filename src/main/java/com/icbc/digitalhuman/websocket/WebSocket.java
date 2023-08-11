@@ -4,10 +4,7 @@ import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
-import com.icbc.digitalhuman.utils.DateUtils;
-import com.icbc.digitalhuman.utils.FormatUtils;
-import com.icbc.digitalhuman.utils.RegexUtils;
-import com.icbc.digitalhuman.utils.SqlUtils;
+import com.icbc.digitalhuman.utils.*;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
@@ -29,9 +26,11 @@ public class WebSocket {
     private static int modify_flag = 0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
-    InfoAndText infoAndText = new InfoAndText();
     private HttpSession httpSession;
-    private String username; // 保存用户名的成员变量
+    private InfoAndText infoAndText = new InfoAndText();
+    private StringBuilder dialog = new StringBuilder();
+    private String username;
+    private String reply;
 
     /**
      * 客户端连接
@@ -53,7 +52,9 @@ public class WebSocket {
             // 用户已登录
             username = user.getUsername();  // 保存用户名到成员变量
             System.out.println(username + "正在登录");
-            sendMessage(session.getId(), username + "您好，欢迎提交批量申请表，请选择所需的投产日期，如都不满意，请在输入框内发送您期望的日期。");
+            reply = username + "您好，欢迎提交批量申请表，请选择所需的投产日期，如都不满意，请在输入框内发送您期望的日期。";
+            sendMessage(session.getId(), reply);
+            LogUtils.appendToDialog(dialog, username, reply);
             sendMessage(session.getId(), DateUtils.chooseProductionDate());
         } else {
             // 用户未登录
@@ -76,9 +77,10 @@ public class WebSocket {
         System.out.println("有用户断开了, ip为:" + remoteAddress);
         //将掉线的用户移除在线的组里
         clients.remove(session.getId());
-
         idle.remove(session);
         busy.remove(session);
+
+        LogUtils.saveDialog(dialog.toString(), username);
     }
 
     /**
@@ -99,12 +101,10 @@ public class WebSocket {
     @OnMessage
     public void onMessage(String message, Session session) {
 
+        LogUtils.appendToDialog(dialog, "Bot", message);
         int user_request = RegexUtils.messageJudgement(message);
-
         String User_ID = session.getId();
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
-
-        String reply = "";
 
         // 说明规则
         if (user_state == 0 && user_request == 1) {
@@ -124,6 +124,7 @@ public class WebSocket {
             infoAndText.setUnnecessaryInfo(unnecessaryInfo);
 
             sendEntity(User_ID, infoAndText);
+            sendMessage(User_ID, reply);
         }
         // 填写信息
         if (user_state == 1 && user_request == 0) {
@@ -131,33 +132,43 @@ public class WebSocket {
             infoAndText = RegexUtils.extractInfo(infoAndText);
             String checkResult = infoAndText.getNecessaryInfo().checkAllFilled();
             if (checkResult.equals("全部必填项均有值") && modify_flag == 0) {
-                reply = "已收到您的消息，" + checkResult + "，请问是否提交？";
+                reply = "已收到您的消息，" + checkResult + "，请问是否需要修改？";
                 user_state = 2;
+                sendEntity(User_ID, infoAndText);
+                sendMessage(User_ID, reply);
+                sendMessage(User_ID, "#111");
             } else if (modify_flag == 1) {
-                reply = "以下是您修改后的内容，请问是否提交？";
+                reply = "以上是您修改后的内容，请问是否需要修改？";
                 user_state = 2;
+                sendEntity(User_ID, infoAndText);
+                sendMessage(User_ID, reply);
+                sendMessage(User_ID, "#111");
             } else {
                 reply = "已收到您的消息，" + checkResult + "请继续补充。";
+                sendEntity(User_ID, infoAndText);
+                sendMessage(User_ID, reply);
             }
-            sendEntity(User_ID, infoAndText);
         }
         // 修改信息
         if (user_state == 2 && user_request == 2) {
-            reply = "好的，请输入您想要修改的部分";
+            reply = "好的，请输入您想要修改的部分。";
             modify_flag = 1;
             user_state = 1;
+            sendMessage(User_ID, reply);
         }
         // 感谢服务
         if (user_state == 2 && user_request == 3) {
-            reply = "#123";
-            sendMessage(User_ID, "本次批量申请任务已完成,请对我们的服务进行评分并留下您宝贵的意见。");
+            reply = "本次批量申请任务已完成,请对我们的服务进行评分并留下您宝贵的意见。";
+            sendMessage(User_ID, reply);
+            sendMessage(User_ID, "#123");
+            LogUtils.appendToDialog(dialog, username, reply);
             user_state = 0;
             modify_flag = 0;
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
         }
 
-        sendMessage(User_ID, reply);
+        LogUtils.appendToDialog(dialog, username, message);
     }
 
     /**

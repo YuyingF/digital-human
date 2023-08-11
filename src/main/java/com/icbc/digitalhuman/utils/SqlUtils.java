@@ -37,17 +37,20 @@ public class SqlUtils {
 
     public BatchWorkDef infoToBatchWorkDef(InfoAndText infoAndText, String username) {
 
-
         BatchWorkDef batchWorkDef = new BatchWorkDef();
         NecessaryInfo necessaryInfo = infoAndText.getNecessaryInfo();
 
         String executionScope = necessaryInfo.getExecutionScope();
         List<Integer> groupCode = new ArrayList<>();
-        if (executionScope.contains("境内")) {
-            groupCode.add(1);
-        }
-        if (executionScope.contains("境外")) {
-            groupCode.addAll(Arrays.asList(50, 51, 53, 55, 56, 58, 60, 62, 63, 66, 70, 71, 73, 77, 78, 79, 81, 83, 85, 86));
+        if (executionScope.contains("全球")) {
+            groupCode.addAll(Arrays.asList(1, 50, 51, 53, 55, 56, 58, 60, 62, 63, 66, 70, 71, 73, 77, 78, 79, 81, 83, 85, 86));
+        } else {
+            if (executionScope.contains("境内")) {
+                groupCode.add(1);
+            }
+            if (executionScope.contains("境外")) {
+                groupCode.addAll(Arrays.asList(50, 51, 53, 55, 56, 58, 60, 62, 63, 66, 70, 71, 73, 77, 78, 79, 81, 83, 85, 86));
+            }
         }
         if (executionScope.contains("个人委托")) {
             groupCode.add(5);
@@ -76,6 +79,8 @@ public class SqlUtils {
             workInterval = "M";
         } else if (executionFrequency.contains("年")) {
             workInterval = "Y";
+        } else if (executionFrequency.contains("不定")) {
+            workInterval = "P";
         }
 
         batchWorkDef.setWorkNowTime(necessaryInfo.getEffectiveDate());

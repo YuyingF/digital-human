@@ -19,7 +19,7 @@ public class NecessaryInfo {
     // 应用
     public String application;
     // 批量种类
-    public String batchCategory = "1";
+    public String batchCategory;
     // 批量场次
     public String batchSession;
     // 作业描述
@@ -37,9 +37,9 @@ public class NecessaryInfo {
     // 接口输出参数
     public String interfaceOutputParameters;
     // 是否支持重跑
-    public String isRetrySupported;
+    public String isRetrySupported = "是";
     // 是否会发生中断
-    public String isInterruptPossible;
+    public String isInterruptPossible = "否";
     // 预估耗时
     public String estimatedTime;
     // 申请类型

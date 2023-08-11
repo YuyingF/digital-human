@@ -238,13 +238,13 @@ public class RegexUtils {
 
     public static int messageJudgement(String message) {
         // 1 投产日期
-        // 2 确认提交
-        // 3 继续修改
+        // 2 继续修改
+        // 3 确认提交
         if (isDate(message)) {
             return 1;
-        } else if (message.equals("否")) {
-            return 2;
         } else if (message.equals("是")) {
+            return 2;
+        } else if (message.equals("否")) {
             return 3;
         }
         return 0;

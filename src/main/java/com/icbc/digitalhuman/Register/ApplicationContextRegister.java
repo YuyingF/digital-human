@@ -1,4 +1,4 @@
-package com.icbc.digitalhuman.utils;
+package com.icbc.digitalhuman.Register;
 
 
 import org.springframework.beans.BeansException;
