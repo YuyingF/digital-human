@@ -44,7 +44,6 @@ public class WebSocket {
         //将新用户存入在线的组
         clients.put(session.getId(), session);
         idle.add(session);
-
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         User user = (User) httpSession.getAttribute("user");
 
@@ -105,7 +104,6 @@ public class WebSocket {
         int user_request = RegexUtils.messageJudgement(message);
         String User_ID = session.getId();
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
-
         // 说明规则
         if (user_state == 0 && user_request == 1) {
             reply = "请依据表格进行提交数据，星号为必填项，我们为您生成了一些默认值，如需修改，请直接覆盖即可。" +
@@ -166,6 +164,10 @@ public class WebSocket {
             modify_flag = 0;
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
+        }
+        if(message.equals("#已提交反馈"))
+        {
+            sendMessage(User_ID,"已收到您的反馈，感谢！");
         }
 
         LogUtils.appendToDialog(dialog, "Bot", reply);
