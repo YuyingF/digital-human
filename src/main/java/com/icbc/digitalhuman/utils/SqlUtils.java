@@ -69,7 +69,7 @@ public class SqlUtils {
 
         batchWorkDef.setWorkName(necessaryInfo.getProjectName());
 
-        // batchMode;
+        batchWorkDef.setBatchMode(necessaryInfo.getApplication());
 
         String executionFrequency = necessaryInfo.getExecutionFrequency();
         String workInterval = batchWorkDef.getWorkInterval();

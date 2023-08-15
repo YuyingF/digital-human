@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icbc.digitalhuman.mapper.WorkFlowControlMapper">
+
+    <resultMap id="WorkFlowControlMap" type="com.icbc.digitalhuman.entity.WorkFlowControl">
+        <result property="moduleName" column="module_name"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+    <select id="find" resultMap="WorkFlowControlMap" parameterType="java.lang.String">
+        SELECT module_name, begin_time, end_time
+        FROM work_flow_control
+        WHERE module_name like CONCAT(#{moduleName}, '%')
+    </select>
+
+</mapper>

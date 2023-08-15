@@ -4,6 +4,7 @@ import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
+import com.icbc.digitalhuman.entity.WorkFlowControl;
 import com.icbc.digitalhuman.utils.*;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -22,7 +24,7 @@ import java.util.concurrent.Future;
 //@Service
 public class WebSocket {
     private static Map<String, Session> clients = new ConcurrentHashMap<>();
-    private static int user_state = 0;  // 0 登录 1 填写开始 2 完成必填
+    private static int user_state = 0;  // 0 选择日期 1 填写开始 2 批量选择 3 完成评价
     private static int modify_flag = 0;
     private static CopyOnWriteArraySet<Session> idle = new CopyOnWriteArraySet<>();
     private static final ConcurrentHashMap<Session, Future<Void>> busy = new ConcurrentHashMap<>();
@@ -156,18 +158,28 @@ public class WebSocket {
             user_state = 1;
             sendMessage(User_ID, reply);
         }
-        // 感谢服务
+        // 场次选择
         if (user_state == 2 && user_request == 3) {
+            reply = "根据您提交的信息，我们有以下批量场次可供选择，如都不满意，请与批量开发工作人员沟通。";
+            sendMessage(User_ID, reply);
+            String moduleName = infoAndText.getNecessaryInfo().getApplication() + "_" + infoAndText.getNecessaryInfo().getUpstreamApplication();
+            BatchUtils batchUtils = new BatchUtils();
+            sendMessage(User_ID, batchUtils.find(moduleName));
+            user_state = 3;
+            modify_flag = 0;
+        }
+        // 感谢服务
+        if (user_state == 3 && user_request == 0) {
             reply = "本次批量申请任务已完成,请您对我们的服务进行评分并留下宝贵的意见。";
             sendMessage(User_ID, reply);
             sendMessage(User_ID, "#123");
             LogUtils.appendToDialog(dialog, username, reply);
             user_state = 0;
             modify_flag = 0;
+            infoAndText.getNecessaryInfo().setApplication(message);
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
         }
-
         LogUtils.appendToDialog(dialog, "Bot", reply);
     }
 
