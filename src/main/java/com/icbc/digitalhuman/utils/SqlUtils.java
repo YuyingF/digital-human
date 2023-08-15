@@ -75,7 +75,7 @@ public class SqlUtils {
             count = 1;
         }
         String countFormatted = (count < 10 ? "0" + count : String.valueOf(count));
-        String workId = "y" + version.substring(0, 3) + "m" + version.substring(4, 5) + "w" + countFormatted;
+        String workId = "y" + version.substring(0, 4) + "m" + version.substring(5, 6) + "w" + countFormatted;
         batchWorkDef.setWorkId(workId);
 
         batchWorkDef.setWorkName(necessaryInfo.getProjectName());
