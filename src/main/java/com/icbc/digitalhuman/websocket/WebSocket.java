@@ -175,6 +175,7 @@ public class WebSocket {
             sendMessage(User_ID, "#123");
             user_state = 0;
             modify_flag = 0;
+            infoAndText.getNecessaryInfo().setApplication(message);
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
         }
