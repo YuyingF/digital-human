@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icbc.digitalhuman.mapper.WorkCountMapper">
+
+    <resultMap id="WorkCountMap" type="com.icbc.digitalhuman.entity.WorkCount">
+        <id column="version" property="version"/>
+        <result column="count" property="count"/>
+    </resultMap>
+
+    <insert id="create">
+        INSERT INTO work_count (version, count)
+        VALUES (#{version}, #{count})
+    </insert>
+
+    <update id="update" parameterType="string">
+        UPDATE work_count
+        SET count = count + 1
+        WHERE version = #{version}
+    </update>
+
+    <select id="find" resultMap="WorkCountMap">
+        SELECT version, count
+        FROM work_count
+        WHERE version = #{version}
+    </select>
+
+
+</mapper>

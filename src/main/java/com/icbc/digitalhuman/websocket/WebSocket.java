@@ -81,8 +81,6 @@ public class WebSocket {
         clients.remove(session.getId());
         idle.remove(session);
         busy.remove(session);
-
-        LogUtils.saveDialog(dialog.toString(), username);
     }
 
     /**
@@ -110,8 +108,7 @@ public class WebSocket {
 
         // 说明规则
         if (user_state == 0 && user_request == 1) {
-            reply = "请依据表格进行提交数据，星号为必填项，我们为您生成了一些默认值，如需修改，请直接覆盖即可。" +
-                    "填写规则为“字段：内容”，不同字段之间请换行。";
+            reply = "请依据表格进行提交数据，星号为必填项，我们为您生成了一些默认值，如需修改，请直接覆盖即可。" + "填写规则为“字段：内容”，不同字段之间请换行。";
             user_state = 1;
 
             NecessaryInfo necessaryInfo = new NecessaryInfo();
@@ -181,7 +178,9 @@ public class WebSocket {
         }
         // 感谢服务
         if (message.equals("#已提交反馈")) {
-            sendMessage(User_ID, "已收到您的反馈，感谢！");
+            reply = "已收到您的反馈，感谢！";
+            sendMessage(User_ID, reply);
+            LogUtils.saveDialog(dialog.toString(), username);
         }
 
         LogUtils.appendToDialog(dialog, "Bot", reply);

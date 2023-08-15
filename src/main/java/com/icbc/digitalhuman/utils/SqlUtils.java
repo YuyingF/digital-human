@@ -3,7 +3,9 @@ package com.icbc.digitalhuman.utils;
 import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.BatchWorkDef;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
+import com.icbc.digitalhuman.entity.WorkCount;
 import com.icbc.digitalhuman.mapper.ProcInitBpcByParamodeMapper;
+import com.icbc.digitalhuman.mapper.WorkCountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +13,6 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +22,9 @@ public class SqlUtils {
 
     @Autowired
     private ProcInitBpcByParamodeMapper procInitBpcByParamodeMapper;
+
+    @Autowired
+    private WorkCountMapper workCountMapper;
 
     //静态初始化
     public static SqlUtils sqlUtils;
@@ -33,6 +36,7 @@ public class SqlUtils {
     public void init() {
         sqlUtils = this;
         sqlUtils.procInitBpcByParamodeMapper = this.procInitBpcByParamodeMapper;
+        sqlUtils.workCountMapper = this.workCountMapper;
     }
 
     public BatchWorkDef infoToBatchWorkDef(InfoAndText infoAndText, String username) {
@@ -57,15 +61,22 @@ public class SqlUtils {
         }
         batchWorkDef.setGroupCode(groupCode);
 
-        String productionDate = necessaryInfo.getProductionDate();
-        System.out.println("sql" + productionDate);
-        LocalDate productionLocalDate = LocalDate.parse(productionDate, DateTimeFormatter.ofPattern("yyyy/M/d"));
-        int year = productionLocalDate.getYear();
-        int month = productionLocalDate.getMonthValue();
-        String formattedYear = String.valueOf(year);
-        String formattedMonth = (month < 10 ? "0" + month : String.valueOf(month));
-
-        batchWorkDef.setWorkId("y" + formattedYear + "m" + formattedMonth + "w01");
+        String version = necessaryInfo.getVersion();
+        int count;
+        WorkCount existingWorkCount = sqlUtils.workCountMapper.find(version);
+        if (existingWorkCount != null) {
+            sqlUtils.workCountMapper.update(version);
+            count = existingWorkCount.getCount() + 1;
+        } else {
+            WorkCount newWorkCount = new WorkCount();
+            newWorkCount.setVersion(version);
+            newWorkCount.setCount(1);
+            sqlUtils.workCountMapper.create(newWorkCount);
+            count = 1;
+        }
+        String countFormatted = (count < 10 ? "0" + count : String.valueOf(count));
+        String workId = "y" + version.substring(0, 3) + "m" + version.substring(4, 5) + "w" + countFormatted;
+        batchWorkDef.setWorkId(workId);
 
         batchWorkDef.setWorkName(necessaryInfo.getProjectName());
 
@@ -82,22 +93,24 @@ public class SqlUtils {
         } else if (executionFrequency.contains("不定")) {
             workInterval = "P";
         }
+        batchWorkDef.setWorkInterval(workInterval);
 
         batchWorkDef.setWorkNowTime(necessaryInfo.getEffectiveDate());
 
-        // workSeq
+        batchWorkDef.setWorkSeq(count);
+
         // workInitType;
         // workInitProc;
 
         batchWorkDef.setWorkProcName(necessaryInfo.getStoredProcedureInterface());
 
         String interfaceInputParameters = necessaryInfo.getInterfaceInputParameters();
-        String workParamMode = sqlUtils.procInitBpcByParamodeMapper.find(interfaceInputParameters);
-
         batchWorkDef.setWorkParaNum(interfaceInputParameters.split("\\+").length);
+
+        String workParamMode = sqlUtils.procInitBpcByParamodeMapper.find(interfaceInputParameters);
         batchWorkDef.setWorkParamMode(workParamMode);
 
-        String notes = formattedYear + formattedMonth + "_" + username + "_DH_" + necessaryInfo.getRequirementSubItem();
+        String notes = version + "_" + username + "_DH_" + necessaryInfo.getRequirementSubItem();
         batchWorkDef.setNotes(notes);
 
         return batchWorkDef;
@@ -127,10 +140,7 @@ public class SqlUtils {
     }
 
     private String insert(BatchWorkDef batchWorkDef, Integer groupCode) {
-        StringBuilder statementBuilder = new StringBuilder("INSERT INTO batch_work_def (GROUP_CODE, WORK_ID, " +
-                "WORK_NAME, BATCH_MODE, WORK_INTERVAL, WORK_NOWTIME, WORK_SEQ, WORK_TYPE, WORK_INIT_TYPE, " +
-                "WORK_INIT_PROC, WORK_PROCNAME, WORK_PARANUM, WORK_PARAMMODE, DATA_FLAG, COMMIT_NUM, SCALE_FLAG, " +
-                "VALID_FLAG, NOTES) VALUES (");
+        StringBuilder statementBuilder = new StringBuilder("INSERT INTO batch_work_def (GROUP_CODE, WORK_ID, " + "WORK_NAME, BATCH_MODE, WORK_INTERVAL, WORK_NOWTIME, WORK_SEQ, WORK_TYPE, WORK_INIT_TYPE, " + "WORK_INIT_PROC, WORK_PROCNAME, WORK_PARANUM, WORK_PARAMMODE, DATA_FLAG, COMMIT_NUM, SCALE_FLAG, " + "VALID_FLAG, NOTES) VALUES (");
 
         statementBuilder.append(groupCode).append(", ");
         statementBuilder.append("'").append(batchWorkDef.getWorkId()).append("', ");
