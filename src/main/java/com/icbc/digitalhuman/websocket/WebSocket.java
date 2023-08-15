@@ -168,20 +168,19 @@ public class WebSocket {
             user_state = 3;
             modify_flag = 0;
         }
-        // 感谢服务
+        // 请求反馈
         if (user_state == 3 && user_request == 0) {
             reply = "本次批量申请任务已完成,请您对我们的服务进行评分并留下宝贵的意见。";
             sendMessage(User_ID, reply);
             sendMessage(User_ID, "#123");
-            LogUtils.appendToDialog(dialog, username, reply);
             user_state = 0;
             modify_flag = 0;
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
         }
-        if(message.equals("#已提交反馈"))
-        {
-            sendMessage(User_ID,"已收到您的反馈，感谢！");
+        // 感谢服务
+        if (message.equals("#已提交反馈")) {
+            sendMessage(User_ID, "已收到您的反馈，感谢！");
         }
 
         LogUtils.appendToDialog(dialog, "Bot", reply);
