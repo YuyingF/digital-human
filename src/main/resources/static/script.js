@@ -81,6 +81,24 @@ function connectWebSocket() {
             messageContainer.appendChild(buttonContainer);
             messageContainer.scrollTop = messageContainer.scrollHeight;
         }
+        else if (message.startsWith('!')) {
+            const messages = message.split('!'); // 按感叹号分割字符串
+            var buttonContainer = document.createElement('div');
+            buttonContainer.className = 'date-button-container';// 获取按钮容器
+
+            for (const message_part of messages) {
+                if (message_part.trim() !== '') { // 跳过空消息
+                    const info = parseInfo(message_part); // 解析信息
+                    if (info) {
+                        const { moduleName, beginTime, endTime } = info;
+                        const button = createButton(moduleName, beginTime, endTime); // 创建按钮
+                        buttonContainer.appendChild(button); // 将按钮添加到容器
+                    }
+                }
+            }
+            messageContainer.appendChild(buttonContainer);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
         else if (message.startsWith('$')) {
             var dates = message.split('$');
             dates.shift(); // 移除数组中的第一个空元素
@@ -247,7 +265,7 @@ async function sendFeedback() {
     const Conversation = {
         evaluation: selectedStars,
         feedback: message,
-        username:savedUsername
+        username: savedUsername
     };
     sendMessage("#已提交反馈");
     const requestOptions = {
@@ -288,14 +306,14 @@ function request_post() {
     };
 }
 function createTableFromJSON(data) {
-    var emphasizeIndicesLeft = [0, 1, 2,3,4,5,6,9,10,11,12,13,14,15,16,17,19,20,21,22,23]; // 需要加红色星号的属性在左侧表格
+    var emphasizeIndicesLeft = [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23]; // 需要加红色星号的属性在左侧表格
     var emphasizeIndicesRight = [24]; // 需要加红色星号的属性在右侧表格
 
     var tableContainer = document.createElement('div');
     tableContainer.className = 'table-container';
 
     var leftTable = document.createElement('table');
-    leftTable.innerHTML = generateTableHTML(data, 0, 23,emphasizeIndicesLeft); // 填充左侧表格数据
+    leftTable.innerHTML = generateTableHTML(data, 0, 23, emphasizeIndicesLeft); // 填充左侧表格数据
     leftTable.className = 'left-table'; // 添加样式类名
     tableContainer.appendChild(leftTable);
 
@@ -304,7 +322,7 @@ function createTableFromJSON(data) {
     tableContainer.appendChild(spacingDiv);
 
     var rightTable = document.createElement('table');
-    rightTable.innerHTML = generateTableHTML(data, 24, 47,emphasizeIndicesRight); // 填充右侧表格数据
+    rightTable.innerHTML = generateTableHTML(data, 24, 47, emphasizeIndicesRight); // 填充右侧表格数据
     rightTable.className = 'right-table'; // 添加样式类名
     tableContainer.appendChild(rightTable);
 
@@ -330,8 +348,34 @@ function generateTableHTML(data, startIndex, endIndex, emphasizeIndices) {
 document.addEventListener("DOMContentLoaded", function () {
     var urlParams = new URLSearchParams(window.location.search);
     savedUsername = urlParams.get("username");
-    console.log("现在登录的人是："+savedUsername);
+    console.log("现在登录的人是：" + savedUsername);
     if (savedUsername) {
         console.log("Welcome, " + savedUsername + "!");
     }
 });
+
+
+
+function parseInfo(message) {
+    const regex = /Module Name: ([^,]+), Begin Time: ([\d:]+), End Time: ([\d:]+)/;
+    const matches = message.match(regex);
+
+    if (matches && matches.length === 4) {
+        const moduleName = matches[1];
+        const beginTime = matches[2];
+        const endTime = matches[3];
+        return { moduleName, beginTime, endTime };
+    }
+
+    return null; // 无法解析的消息返回 null
+}
+
+function createButton(moduleName, beginTime, endTime) {
+    const button = document.createElement('button');
+    button.className = 'date-button';
+    button.textContent = `${beginTime}-${endTime}`;
+    button.onclick = function () {
+        sendMessage(moduleName); // 向服务器发送模块名
+    };
+    return button;
+}

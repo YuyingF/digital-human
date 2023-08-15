@@ -26,7 +26,7 @@ public class BatchUtils {
         List<WorkFlowControl> workflowControls = batchUtils.workFlowControlMapper.find(moduleName);
         StringBuilder messageBuilder = new StringBuilder();
         for (WorkFlowControl control : workflowControls) {
-            messageBuilder.append("Module Name: ").append(control.getModuleName())
+            messageBuilder.append("!Module Name: ").append(control.getModuleName())
                     .append(", Begin Time: ").append(control.getBeginTime())
                     .append(", End Time: ").append(control.getEndTime())
                     .append("\n");
