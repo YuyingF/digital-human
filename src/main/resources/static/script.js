@@ -21,7 +21,8 @@ window.addEventListener('load', function () {
         if (event.keyCode === 13 && event.shiftKey) {
             event.preventDefault();
             sendButton.click();
-        } else if (event.keyCode === 13) {
+        }
+        else if (event.keyCode === 13) {
             messageInput.value += '\n';
         }
     });
@@ -48,8 +49,39 @@ function connectWebSocket() {
                 moveFirstRowToLast();
                 showRatingModule();
                 already_show_star_flag = 1;
+                messageContainer.scrollTop = messageContainer.scrollHeight;
             }
-        } else if (message.startsWith('$')) {
+        }
+        else if (message.includes('#111')) {
+            // 创建按钮容器
+            var buttonContainer = document.createElement('div');
+            buttonContainer.className = 'date-button-container';
+
+            // 创建“是”按钮
+            var yesButton = document.createElement('button');
+            yesButton.className = 'date-button';
+            yesButton.textContent = '是的，我需要修改';
+            yesButton.onclick = function () {
+                sendMessage('是');
+            };
+
+            // 创建“否”按钮
+            var noButton = document.createElement('button');
+            noButton.className = 'date-button';
+            noButton.textContent = '不必，表格内容无误';
+            noButton.onclick = function () {
+                sendMessage('否');
+            };
+
+            // 将按钮添加到容器
+            buttonContainer.appendChild(yesButton);
+            buttonContainer.appendChild(noButton);
+
+            // 将按钮容器添加到聊天界面
+            messageContainer.appendChild(buttonContainer);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+        else if (message.startsWith('$')) {
             var dates = message.split('$');
             dates.shift(); // 移除数组中的第一个空元素
 
@@ -78,7 +110,8 @@ function connectWebSocket() {
             var tableContainer = createTableFromJSON(parsedData);
             messageContainer.appendChild(tableContainer);
             messageContainer.scrollTop = messageContainer.scrollHeight;
-        } else {
+        }
+        else {
             // 否则按照原本的气泡效果处理
             addMessageToChat(message, 'left');
         }
@@ -92,7 +125,6 @@ function connectWebSocket() {
         console.error('WebSocket连接发生错误');
     };
 }
-
 function sendMessage(message) {
     if (websocket.readyState === WebSocket.OPEN) {
         websocket.send(message);
@@ -145,10 +177,7 @@ function addMessageToChat(message, direction) {
 
 
     }
-
-
 }
-
 let lockedStars = 0;
 let hoverStars = 0;
 
@@ -179,9 +208,7 @@ function hoverRating(stars) {
         });
     }
 }
-
 const ratingModule = document.getElementById('rating-module');
-
 function showRatingModule() {
     ratingModule.style.display = 'block';
 }
@@ -220,9 +247,9 @@ async function sendFeedback() {
     const Conversation = {
         evaluation: selectedStars,
         feedback: message,
-        username: savedUsername
+        username:savedUsername
     };
-    // sendMessage(message);
+    sendMessage("#已提交反馈");
     const requestOptions = {
         method: 'POST',
         // mode: 'no-cors',
@@ -245,7 +272,6 @@ async function sendFeedback() {
         console.error('An error occurred:', error);
     }
 }
-
 function request_post() {
     var httpRequest = new XMLHttpRequest();//第一步：创建需要的对象
     httpRequest.open('POST', 'application/json;charset=utf-8', true); //第二步：打开连接
@@ -261,16 +287,15 @@ function request_post() {
         }
     };
 }
-
 function createTableFromJSON(data) {
-    var emphasizeIndicesLeft = [0, 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23]; // 需要加红色星号的属性在左侧表格
+    var emphasizeIndicesLeft = [0, 1, 2,3,4,5,6,9,10,11,12,13,14,15,16,17,19,20,21,22,23]; // 需要加红色星号的属性在左侧表格
     var emphasizeIndicesRight = [24]; // 需要加红色星号的属性在右侧表格
 
     var tableContainer = document.createElement('div');
     tableContainer.className = 'table-container';
 
     var leftTable = document.createElement('table');
-    leftTable.innerHTML = generateTableHTML(data, 0, 23, emphasizeIndicesLeft); // 填充左侧表格数据
+    leftTable.innerHTML = generateTableHTML(data, 0, 23,emphasizeIndicesLeft); // 填充左侧表格数据
     leftTable.className = 'left-table'; // 添加样式类名
     tableContainer.appendChild(leftTable);
 
@@ -279,7 +304,7 @@ function createTableFromJSON(data) {
     tableContainer.appendChild(spacingDiv);
 
     var rightTable = document.createElement('table');
-    rightTable.innerHTML = generateTableHTML(data, 24, 47, emphasizeIndicesRight); // 填充右侧表格数据
+    rightTable.innerHTML = generateTableHTML(data, 24, 47,emphasizeIndicesRight); // 填充右侧表格数据
     rightTable.className = 'right-table'; // 添加样式类名
     tableContainer.appendChild(rightTable);
 
@@ -305,7 +330,7 @@ function generateTableHTML(data, startIndex, endIndex, emphasizeIndices) {
 document.addEventListener("DOMContentLoaded", function () {
     var urlParams = new URLSearchParams(window.location.search);
     savedUsername = urlParams.get("username");
-    console.log("现在登录的人是：" + savedUsername);
+    console.log("现在登录的人是："+savedUsername);
     if (savedUsername) {
         console.log("Welcome, " + savedUsername + "!");
     }

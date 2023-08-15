@@ -176,10 +176,14 @@ public class WebSocket {
             LogUtils.appendToDialog(dialog, username, reply);
             user_state = 0;
             modify_flag = 0;
-            infoAndText.getNecessaryInfo().setApplication(message);
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
         }
+        if(message.equals("#已提交反馈"))
+        {
+            sendMessage(User_ID,"已收到您的反馈，感谢！");
+        }
+
         LogUtils.appendToDialog(dialog, "Bot", reply);
     }
 

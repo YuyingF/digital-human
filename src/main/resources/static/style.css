@@ -5,20 +5,21 @@ body {
 #front-title{
   width: 100%;
   height: 40px;
-  background-color: #0b013d;
   align-items: center;
   justify-content: space-between;
   font-size: 27px;
-  color: #ffffff;
+  color: #eaeaea;
+  border-left: 2px solid #dcdbdb;
   display: flex;
   font-family:"KaiTi";
-  background-image: linear-gradient(135.28150622704527deg, rgba(42, 39, 107,1) 34.87810418722971%,rgb(202, 217, 234) 66.40804351315722%)
-  /* background-image: linear-gradient(135.28150622704527deg, rgba(42, 39, 107,1) 34.87810418722971%,rgba(186, 213, 241,1) 66.40804351315722%) */
+  background-image: linear-gradient(145.28150622704527deg, #78a0cf 20.87810418722971%,rgb(228, 243, 255) 40.40804351315722%)
+  /* background-image: linear-gradient(135.28150622704527deg, #3cadea  rgba(42, 39, 107,1) 34.87810418722971%,rgba(186, 213, 241,1) 66.40804351315722%) */
 }
 #all{
   width: 100%;
   padding: 0px;
   display: flex;
+  border-bottom:2px solid #d8d8d8;
 }
 #choose{
   width: 20%;
@@ -29,12 +30,14 @@ body {
   margin-left:0px;
   background-color: #ffffff;
   padding: 10px;
-  border: 0.5px solid #656466;
+  border-top: 2px solid #d8d8d8;
+  border-right: 2px solid #d8d8d8;
+  border-left:2px solid #d8d8d8;
   display: flex;
   flex-direction: column;
   text-align: center;
   float: left;
-  background-image: linear-gradient(175.81871180525047deg, rgba(42, 39, 107,1) 6.556970529837519%,rgba(255, 255, 255,1) 16.825067209920416%)
+  background-image: linear-gradient(175.81871180525047deg, #78a0cf 3.156970529837519%,rgb(250, 253, 255) 8.825067209920416%)
   /* background-image: linear-gradient(174.80556881731286deg, rgba(42, 39, 107,1) 10.391286494073505%,rgba(186, 213, 241,1) 21.724530488492285%) */
 }
 #chatbox {
@@ -46,12 +49,13 @@ body {
   margin-left:0px;
   background-color: #ffffff;
   padding: 10px;
-  border: 1px solid #676767;
+  border-top: 2px solid transparent; /* 将原来的顶部边框颜色设为透明 */
+  border-image: linear-gradient(to right, #d8d8d8 40%, #cc4848 65%, #cc4848 100%, transparent 100%) 1 1;
   display: flex;
   flex-direction: column;
   /* text-align: center; */
   float: left;
-  background-image:linear-gradient(173.2303788827644deg, rgba(42, 39, 107,1) 3.2694370177731757%,rgba(255, 255, 255,1) 10.722520472004064%)
+  background-image:linear-gradient(173.2303788827644deg, #78a0cf 0.5694370177731757%,rgb(253, 254, 255) 4.222520472004064%)
   /* background-image: linear-gradient(167.92541594033844deg, rgba(42, 39, 107,1) 5.177479692310783%,rgba(186, 213, 241,1) 13.343163716143161%) */
 }
 .bubble-container-left {
@@ -80,9 +84,13 @@ body {
   width:fit-content;
 }
 
+#Evaluation-prompt{
+  margin-top: 5px;
+}
+
 .bubble.right {
-  background-color: #4fa763;
-  color: #000000;
+  background-color: #44b2ed;
+  color: #fdfdfd;
   text-align: left;
   margin-left: 400px;
   margin-right: 0px;
@@ -123,16 +131,43 @@ body {
   display: block;
   height: 300px;
   width: 98.5%;
-  overflow-y: scroll;
-  border: 1px solid #ccc;
+  overflow-y:scroll;
+  border: 0px solid #ccc;
+
   margin-bottom: 0%;
   background-color:rgba(255, 255, 255, 0);
   padding: 5px;
+  padding-top: 10px;
+  border-radius: 4px;
   flex: 1;
-  background-image: url("image/chat_backgrond.png"); 
+  background-image: url("image/chat_backgrond.png");
   background-size:40% auto;
   background-position: center;
-  background-repeat:no-repeat
+  background-repeat:no-repeat;
+  transition: border 0.3s,box-shadow 0.3s;
+}
+#message-container:hover{
+  box-shadow:1px 1px 8px #ccc;
+}
+#message-container::-webkit-scrollbar {
+  width: 8px; /* 设置滚动条宽度 */
+}
+
+#message-container::-webkit-scrollbar-track {
+  background: transparent; /* 设置滚动条轨道背景色 */
+}
+
+#message-container::-webkit-scrollbar-thumb {
+  background-color: #aaa; /* 设置滚动条滑块颜色 */
+  border-radius: 4px; /* 设置滚动条滑块的圆角 */
+}
+
+#message-container::-webkit-scrollbar-thumb:hover {
+  background-color: #888; /* 设置鼠标悬停时滚动条滑块颜色 */
+}
+
+#message-container::-webkit-scrollbar-thumb:active {
+  background-color: #666; /* 设置滚动条滑块被点击时颜色 */
 }
 .rating {
   justify-content: center;
@@ -142,18 +177,22 @@ body {
   border-radius: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
-  border: 0.7px solid #434343;
+  border: 1.5px solid #909191;
   height: 210px;
   width: 28%;
-  margin-left: 36%;
+  margin-left: 10%;
   margin-right: 36%;
   display: none;
   bottom: 0;
   color: #414141;
-  background-color:rgba(254, 254, 254, 0.9);
+  background-color:rgba(255, 255, 255, 0.8);
+  box-shadow:1px 1px 2px rgb(210, 209, 209);
+  transition: background-color 0.3s,border 0.3s,box-shadow 0.3s;
 }
-#Evaluation-prompt{
-  margin-top: 5px;
+.rating:hover{
+  border: 1.5px solid #595a5a;
+  background-color:rgba(255, 255, 255, 0.9);
+  box-shadow:1px 1px 5px rgb(153, 152, 152);
 }
 .stars {
   display: inline-block;
@@ -170,11 +209,21 @@ body {
   vertical-align: middle;
   border-radius: 5px;
   width: 100%;
-  box-shadow:1px 1px 5px #4fa763;
-  background-color:rgb(66, 191, 91);
+  border: 1.5px solid #6d6d6d;
+  box-shadow:1px 1px 5px rgb(148, 148, 148);
+  background-color:rgb(255, 255, 255);
+  color: #3c3c3c;
+  transition: background-color 0.3s, color 0.3s;
+}
+.submit-btn:hover {
+  background-color:#44b2ed;
+  box-shadow:1px 1px 5px #44b2ed;
+  color: #fdfdfd;
+
 }
 
 .button-container {
+  border:0px;
   margin-left: 36%;
   width: 30%;
   text-align: center;
@@ -183,31 +232,53 @@ body {
   height: 90px;
   width: 80%;
   background-color:rgba(255, 255, 255, 0.5);
-  box-shadow:1px 1px 10px rgb(210, 209, 209);
+  box-shadow:1px 1px 7px rgb(210, 209, 209);
   border-radius: 5px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+#evaluate-input:hover{
+  box-shadow:1px 1px 7px rgb(142, 141, 141);
 }
 
 #message-input {
-  border: 1px solid #272626;
+  border: 0.5px solid #807f7f;
   padding: 5px;
-  margin: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 5px;
   background-color:rgba(255, 255, 255, 0.1);
-  box-shadow:1px 1px 10px rgb(151, 150, 150);
+  box-shadow:1px 1px 6px rgb(136, 136, 136);
   height: 80px; /* 调整输入框的高度 */
   resize: none;
-   /* 添加滚动效果 */
+  border-radius: 3px;
+  /* 添加滚动效果 */
   white-space: pre-line;
   font-family:"黑体";
+  transition: box-shadow 0.3s,border 0.3s
+}
+#message-input:hover{
+  border: 0.5px solid #272626;
+  box-shadow:1px 1px 9px rgb(98, 97, 97);
 }
 
 
 #send-button {
   padding: 5px;
-  margin-right: 10px;
-  margin-left: 10px;
-  border-radius: 10px;
-  box-shadow:1px 1px 10px #4fa763;
-  background-color: #4fa763;
+  margin-right: 5px;
+  /* margin-left: 10px; */
+  border: 1.8px solid #515050;
+  border-radius: 4px;
+  box-shadow:1px 1px 5px #44b2ed;
+  background-color:#44b2ed;
+  color: #fdfdfd;
+  transition: background-color 0.3s, color 0.3s,border 0.3s;
+}
+#send-button:hover{
+  background-color:#70c7f6;
+  box-shadow:1px 1px 5px #70c7f6;
+  border: 1.8px solid #787777;
+  color: #5e5d5d;
 }
 
 .box:hover {
