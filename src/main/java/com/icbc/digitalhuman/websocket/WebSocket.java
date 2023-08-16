@@ -4,7 +4,6 @@ import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
-import com.icbc.digitalhuman.entity.WorkFlowControl;
 import com.icbc.digitalhuman.utils.*;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -54,10 +52,10 @@ public class WebSocket {
             // 用户已登录
             username = user.getUsername();  // 保存用户名到成员变量
             System.out.println(username + "正在登录");
-            reply = username + "您好，欢迎提交批量申请表，请选择所需的投产日期，如都不满意，请在输入框内发送您期望的日期。";
+            reply = username + "您好，欢迎来到统一资源申请系统，请问您需要申请新的批量开发作业还是修改已提交的作业？";
             sendMessage(session.getId(), reply);
             LogUtils.appendToDialog(dialog, username, reply);
-            sendMessage(session.getId(), DateUtils.chooseProductionDate());
+            sendMessage(session.getId(), "新增还是修改");
         } else {
             // 用户未登录
             try {
@@ -81,6 +79,7 @@ public class WebSocket {
         clients.remove(session.getId());
         idle.remove(session);
         busy.remove(session);
+        LogUtils.saveDialog(dialog.toString(), infoAndText.getNecessaryInfo().getJobId());
     }
 
     /**
@@ -106,10 +105,36 @@ public class WebSocket {
         String User_ID = session.getId();
         System.out.println("服务端收到客户端" + User_ID + "发来的消息: " + message + "");
 
+        // 新增
+        if (message.equals("新增")) {
+            reply = "欢迎提交批量申请表，请选择所需的投产日期，如都不满意，请在输入框内发送您期望的日期。";
+            user_state = 11;
+            sendMessage(session.getId(), reply);
+            sendMessage(session.getId(), DateUtils.chooseProductionDate());
+        }
+        // 修改
+        else if (message.equals("修改")) {
+            reply = "请输入您需要修改的审批表的作业id。";
+            user_state = 21;
+            sendMessage(session.getId(), reply);
+        }
+        // 显示原先信息
+        else if (user_state == 21 && user_request == 0) {
+            InfoUtils infoUtils = new InfoUtils();
+            infoAndText = infoUtils.findInfoAndText(message);
+            if (infoAndText.getNecessaryInfo() == null) {
+                reply = "您输入的作业id不存在，请核实后重新输入。";
+            } else {
+                reply = "以上为" + message + "批量开发作业信息，请发送需要修改的部分";
+                user_state = 12;
+                sendEntity(User_ID, infoAndText);
+            }
+            sendMessage(User_ID, reply);
+        }
         // 说明规则
-        if (user_state == 0 && user_request == 1) {
+        else if (user_state == 11 && user_request == 1) {
             reply = "请依据表格进行提交数据，星号为必填项，我们为您生成了一些默认值，如需修改，请直接覆盖即可。" + "填写规则为“字段：内容”，不同字段之间请换行。";
-            user_state = 1;
+            user_state = 12;
 
             NecessaryInfo necessaryInfo = new NecessaryInfo();
             UnnecessaryInfo unnecessaryInfo = new UnnecessaryInfo();
@@ -118,6 +143,8 @@ public class WebSocket {
             necessaryInfo.setVersion(dateUtils.setVersion(message));
             necessaryInfo.setProductionDate(message);
             necessaryInfo.setEffectiveDate(dateUtils.setEffectiveDate(message));
+            necessaryInfo.setJobId(dateUtils.setJobId(necessaryInfo.getVersion()));
+            unnecessaryInfo.setJobId(necessaryInfo.getJobId());
 
             infoAndText.setNecessaryInfo(necessaryInfo);
             infoAndText.setUnnecessaryInfo(unnecessaryInfo);
@@ -126,19 +153,19 @@ public class WebSocket {
             sendMessage(User_ID, reply);
         }
         // 填写信息
-        if (user_state == 1 && user_request == 0) {
+        else if (user_state == 12 && user_request == 0) {
             infoAndText.setText(message);
             infoAndText = RegexUtils.extractInfo(infoAndText);
             String checkResult = infoAndText.getNecessaryInfo().checkAllFilled();
             if (checkResult.equals("全部必填项均有值") && modify_flag == 0) {
-                reply = "已收到您的消息，" + checkResult + "，请问是否需要修改？";
-                user_state = 2;
+                reply = "已收到您的消息，请问是否需要修改？";
+                user_state = 3;
                 sendEntity(User_ID, infoAndText);
                 sendMessage(User_ID, reply);
                 sendMessage(User_ID, "#111");
             } else if (modify_flag == 1) {
                 reply = "以上是您修改后的内容，请问是否需要修改？";
-                user_state = 2;
+                user_state = 3;
                 sendEntity(User_ID, infoAndText);
                 sendMessage(User_ID, reply);
                 sendMessage(User_ID, "#111");
@@ -149,40 +176,41 @@ public class WebSocket {
             }
         }
         // 修改信息
-        if (user_state == 2 && user_request == 2) {
+        else if (user_state == 3 && user_request == 2) {
             reply = "好的，请输入您想要修改的部分。";
             modify_flag = 1;
-            user_state = 1;
+            user_state = 12;
             sendMessage(User_ID, reply);
         }
         // 场次选择
-        if (user_state == 2 && user_request == 3) {
+        else if (user_state == 3 && user_request == 3) {
             reply = "根据您提交的信息，我们有以下批量场次可供选择，如都不满意，请与批量开发工作人员沟通。";
             sendMessage(User_ID, reply);
             String moduleName = infoAndText.getNecessaryInfo().getApplication() + "_" + infoAndText.getNecessaryInfo().getUpstreamApplication();
-            BatchUtils batchUtils = new BatchUtils();
-            sendMessage(User_ID, batchUtils.find(moduleName));
-            user_state = 3;
+            InfoUtils infoUtils = new InfoUtils();
+            sendMessage(User_ID, infoUtils.findModuleName(moduleName));
+            user_state = 4;
             modify_flag = 0;
         }
         // 请求反馈
-        if (user_state == 3 && user_request == 0) {
+        else if (user_state == 4 && user_request == 0) {
             reply = "本次批量申请任务已完成,请您对我们的服务进行评分并留下宝贵的意见。";
             sendMessage(User_ID, reply);
             sendMessage(User_ID, "#123");
             user_state = 0;
             modify_flag = 0;
+            InfoUtils infoUtils = new InfoUtils();
+            infoUtils.createInfoAndText(infoAndText);
             infoAndText.getNecessaryInfo().setApplication(message);
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
+            sendMessage(User_ID, "%" + infoAndText.getNecessaryInfo().getJobId() + ".sql");
         }
         // 感谢服务
-        if (message.equals("#已提交反馈")) {
+        else if (message.equals("#已提交反馈")) {
             reply = "已收到您的反馈，感谢！";
             sendMessage(User_ID, reply);
-            LogUtils.saveDialog(dialog.toString(), username);
         }
-
         LogUtils.appendToDialog(dialog, "Bot", reply);
     }
 

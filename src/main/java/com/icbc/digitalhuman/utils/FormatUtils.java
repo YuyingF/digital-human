@@ -9,7 +9,7 @@ public class FormatUtils {
                 "\"中心项目编号\":\"" + infoAndText.getNecessaryInfo().centralProjectNumber + "\"," +
                 "\"项目名称\":\"" + infoAndText.getNecessaryInfo().projectName + "\"," +
                 "\"需求子条目\":\"" + infoAndText.getNecessaryInfo().requirementSubItem + "\"," +
-                "\"应用\":\"" + infoAndText.getNecessaryInfo().application + "\"," +
+                "\"应用名称\":\"" + infoAndText.getNecessaryInfo().application + "\"," +
                 "\"批量种类\":\"" + infoAndText.getNecessaryInfo().batchCategory + "\"," +
                 "\"批量场次\":\"" + infoAndText.getNecessaryInfo().batchSession + "\"," +
 

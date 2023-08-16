@@ -8,6 +8,8 @@ import java.util.Map;
 @Data
 public class NecessaryInfo {
 
+    // 作业id
+    public String jobId;
     // 版本
     public String version;
     // 中心项目编号
@@ -17,7 +19,7 @@ public class NecessaryInfo {
     // 需求子条目
     public String requirementSubItem;
     // 应用
-    public String application;
+    public String application = "GCM";
     // 批量种类
     public String batchCategory;
     // 批量场次
@@ -100,7 +102,6 @@ public class NecessaryInfo {
         }
 
         if (missingFields.length() > 0) {
-            System.out.println(missingFields.toString());
             return "缺少以下必填项: " + missingFields.toString();
         } else {
             return "全部必填项均有值";

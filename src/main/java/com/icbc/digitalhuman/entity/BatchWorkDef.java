@@ -13,7 +13,7 @@ public class BatchWorkDef {
     String batchMode;
     String workInterval;
     String workNowTime;
-    int workSeq = 1;
+    String workSeq;
     int workType = 1;
     int workInitType = 0;
     String workInitProc;

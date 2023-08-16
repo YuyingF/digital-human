@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icbc.digitalhuman.mapper.UnnecessaryInfoMapper">
+
+    <resultMap id="UnnecessaryInfoResultMap" type="com.icbc.digitalhuman.entity.UnnecessaryInfo">
+        <id property="jobId" column="job_id"/>
+        <result property="jobName" column="job_name"/>
+        <result property="executionFrequencyDescription" column="execution_frequency_description"/>
+        <result property="executionScopeDescription" column="execution_scope_description"/>
+        <result property="inputParameterDescription" column="input_parameter_description"/>
+        <result property="interruptionSolution" column="interruption_solution"/>
+        <result property="fileInterfaceName" column="file_interface_name"/>
+        <result property="isFileStructureChanged" column="is_file_structure_changed"/>
+        <result property="upstreamApplicationChineseName" column="upstream_application_chinese_name"/>
+        <result property="isTemporaryTableFieldsRequired" column="is_temporary_table_fields_required"/>
+        <result property="hasLegacyFiles" column="has_legacy_files"/>
+        <result property="upstreamTextDescription" column="upstream_text_description"/>
+        <result property="upstreamContact" column="upstream_contact"/>
+        <result property="upstreamFileTransferMethod" column="upstream_file_transfer_method"/>
+        <result property="upstreamPointToPointTransmission" column="upstream_point_to_point_transmission"/>
+        <result property="downstreamApplication" column="downstream_application"/>
+        <result property="downstreamTargetInterface" column="downstream_target_interface"/>
+        <result property="downstreamContact" column="downstream_contact"/>
+        <result property="downstreamFileTransferMethod" column="downstream_file_transfer_method"/>
+        <result property="downstreamPointToPointTransmission" column="downstream_point_to_point_transmission"/>
+        <result property="developmentTeamDescription" column="development_team_description"/>
+        <result property="versionLibrary" column="version_library"/>
+        <result property="programList" column="program_list"/>
+        <result property="fileApplicationType" column="file_application_type"/>
+        <result property="distributedJobName" column="distributed_job_name"/>
+        <result property="distributedJobExecutionTime" column="distributed_job_execution_time"/>
+    </resultMap>
+
+    <insert id="create" parameterType="com.icbc.digitalhuman.entity.UnnecessaryInfo">
+        INSERT INTO unnecessary_info (job_id, job_name, execution_frequency_description, execution_scope_description,
+                                      input_parameter_description, interruption_solution, file_interface_name,
+                                      is_file_structure_changed, upstream_application_chinese_name,
+                                      is_temporary_table_fields_required, has_legacy_files, upstream_text_description,
+                                      upstream_contact, upstream_file_transfer_method,
+                                      upstream_point_to_point_transmission,
+                                      downstream_application, downstream_target_interface, downstream_contact,
+                                      downstream_file_transfer_method, downstream_point_to_point_transmission,
+                                      development_team_description, version_library, program_list,
+                                      file_application_type,
+                                      distributed_job_name, distributed_job_execution_time)
+        VALUES (#{jobId}, #{jobName}, #{executionFrequencyDescription}, #{executionScopeDescription},
+                #{inputParameterDescription}, #{interruptionSolution}, #{fileInterfaceName},
+                #{isFileStructureChanged}, #{upstreamApplicationChineseName},
+                #{isTemporaryTableFieldsRequired}, #{hasLegacyFiles}, #{upstreamTextDescription},
+                #{upstreamContact}, #{upstreamFileTransferMethod}, #{upstreamPointToPointTransmission},
+                #{downstreamApplication}, #{downstreamTargetInterface}, #{downstreamContact},
+                #{downstreamFileTransferMethod}, #{downstreamPointToPointTransmission},
+                #{developmentTeamDescription}, #{versionLibrary}, #{programList}, #{fileApplicationType},
+                #{distributedJobName}, #{distributedJobExecutionTime}) ON DUPLICATE KEY
+        UPDATE
+            job_name =
+        VALUES (job_name), execution_frequency_description =
+        VALUES (execution_frequency_description), execution_scope_description =
+        VALUES (execution_scope_description), input_parameter_description =
+        VALUES (input_parameter_description), interruption_solution =
+        VALUES (interruption_solution), file_interface_name =
+        VALUES (file_interface_name), is_file_structure_changed =
+        VALUES (is_file_structure_changed), upstream_application_chinese_name =
+        VALUES (upstream_application_chinese_name), is_temporary_table_fields_required =
+        VALUES (is_temporary_table_fields_required), has_legacy_files =
+        VALUES (has_legacy_files), upstream_text_description =
+        VALUES (upstream_text_description), upstream_contact =
+        VALUES (upstream_contact), upstream_file_transfer_method =
+        VALUES (upstream_file_transfer_method), upstream_point_to_point_transmission =
+        VALUES (upstream_point_to_point_transmission), downstream_application =
+        VALUES (downstream_application), downstream_target_interface =
+        VALUES (downstream_target_interface), downstream_contact =
+        VALUES (downstream_contact), downstream_file_transfer_method =
+        VALUES (downstream_file_transfer_method), downstream_point_to_point_transmission =
+        VALUES (downstream_point_to_point_transmission), development_team_description =
+        VALUES (development_team_description), version_library =
+        VALUES (version_library), program_list =
+        VALUES (program_list), file_application_type =
+        VALUES (file_application_type), distributed_job_name =
+        VALUES (distributed_job_name), distributed_job_execution_time =
+        VALUES (distributed_job_execution_time)
+    </insert>
+
+    <select id="find" resultMap="UnnecessaryInfoResultMap">
+        SELECT job_id,
+               job_name,
+               execution_frequency_description,
+               execution_scope_description,
+               input_parameter_description,
+               interruption_solution,
+               file_interface_name,
+               is_file_structure_changed,
+               upstream_application_chinese_name,
+               is_temporary_table_fields_required,
+               has_legacy_files,
+               upstream_text_description,
+               upstream_contact,
+               upstream_file_transfer_method,
+               upstream_point_to_point_transmission,
+               downstream_application,
+               downstream_target_interface,
+               downstream_contact,
+               downstream_file_transfer_method,
+               downstream_point_to_point_transmission,
+               development_team_description,
+               version_library,
+               program_list,
+               file_application_type,
+               distributed_job_name,
+               distributed_job_execution_time
+        FROM unnecessary_info
+        WHERE job_id = #{jobId}
+    </select>
+
+</mapper>

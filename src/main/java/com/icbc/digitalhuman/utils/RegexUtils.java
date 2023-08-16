@@ -19,7 +19,7 @@ public class RegexUtils {
         PROPERTY_REGEX_MAP.put("centralProjectNumber", "中心项目编号[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("projectName", "项目名称[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("requirementSubItem", "需求子条目[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("application", "应用[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("application", "应用名称[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("batchCategory", "批量种类[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("batchSession", "批量场次[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("jobDescription", "作业描述[:：](.*?)(?:\\n|$)");
@@ -36,6 +36,7 @@ public class RegexUtils {
         PROPERTY_REGEX_MAP.put("effectiveDate", "生效日期[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("deliveryDate", "交付日期[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("productionDate", "投产日期[:：](.*?)(?:\\n|$)");
+        PROPERTY_REGEX_MAP.put("upstreamApplication", "上游应用[:：](.*?)(?:\\n|$)");
 
         // UnnecessaryInfo
         PROPERTY_REGEX_MAP.put("jobId", "作业id[:：](.*?)(?:\\n|$)");
@@ -44,7 +45,6 @@ public class RegexUtils {
         PROPERTY_REGEX_MAP.put("executionScopeDescription", "执行范围说明[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("inputParameterDescription", "接口输入参数补充说明[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("interruptionSolution", "中断解决方案[:：](.*?)(?:\\n|$)");
-        PROPERTY_REGEX_MAP.put("upstreamApplication", "上游应用[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("fileInterfaceName", "文件接口名[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("isFileStructureChanged", "文件结构是否变化[:：](.*?)(?:\\n|$)");
         PROPERTY_REGEX_MAP.put("upstreamApplicationChineseName", "上游应用文本中文名[:：](.*?)(?:\\n|$)");

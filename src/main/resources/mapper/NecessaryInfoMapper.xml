@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icbc.digitalhuman.mapper.NecessaryInfoMapper">
+
+    <resultMap id="NecessaryInfoResultMap" type="com.icbc.digitalhuman.entity.NecessaryInfo">
+        <id property="jobId" column="job_id"/>
+        <result property="version" column="version"/>
+        <result property="centralProjectNumber" column="central_project_number"/>
+        <result property="projectName" column="project_name"/>
+        <result property="requirementSubItem" column="requirement_sub_item"/>
+        <result property="application" column="application"/>
+        <result property="batchCategory" column="batch_category"/>
+        <result property="batchSession" column="batch_session"/>
+        <result property="jobDescription" column="job_description"/>
+        <result property="prerequisiteJob" column="prerequisite_job"/>
+        <result property="executionFrequency" column="execution_frequency"/>
+        <result property="executionScope" column="execution_scope"/>
+        <result property="storedProcedureInterface" column="stored_procedure_interface"/>
+        <result property="interfaceInputParameters" column="interface_input_parameters"/>
+        <result property="interfaceOutputParameters" column="interface_output_parameters"/>
+        <result property="isRetrySupported" column="is_retry_supported"/>
+        <result property="isInterruptPossible" column="is_interrupt_possible"/>
+        <result property="estimatedTime" column="estimated_time"/>
+        <result property="applicationType" column="application_type"/>
+        <result property="effectiveDate" column="effective_date"/>
+        <result property="deliveryDate" column="delivery_date"/>
+        <result property="productionDate" column="production_date"/>
+        <result property="upstreamApplication" column="upstream_application"/>
+    </resultMap>
+
+    <insert id="create" parameterType="com.icbc.digitalhuman.entity.NecessaryInfo">
+        INSERT INTO necessary_info (job_id, version, central_project_number, project_name, requirement_sub_item,
+                                    application, batch_category, batch_session, job_description, prerequisite_job,
+                                    execution_frequency, execution_scope, stored_procedure_interface,
+                                    interface_input_parameters, interface_output_parameters,
+                                    is_retry_supported, is_interrupt_possible, estimated_time, application_type,
+                                    effective_date, delivery_date, production_date, upstream_application)
+        VALUES (#{jobId}, #{version}, #{centralProjectNumber}, #{projectName}, #{requirementSubItem}, #{application},
+                #{batchCategory}, #{batchSession}, #{jobDescription}, #{prerequisiteJob},
+                #{executionFrequency}, #{executionScope}, #{storedProcedureInterface},
+                #{interfaceInputParameters}, #{interfaceOutputParameters},
+                #{isRetrySupported}, #{isInterruptPossible}, #{estimatedTime},
+                #{applicationType}, #{effectiveDate}, #{deliveryDate}, #{productionDate},
+                #{upstreamApplication}) ON DUPLICATE KEY
+        UPDATE
+            version =
+        VALUES (version), central_project_number =
+        VALUES (central_project_number), project_name =
+        VALUES (project_name), requirement_sub_item =
+        VALUES (requirement_sub_item), application =
+        VALUES (application), batch_category =
+        VALUES (batch_category), batch_session =
+        VALUES (batch_session), job_description =
+        VALUES (job_description), prerequisite_job =
+        VALUES (prerequisite_job), execution_frequency =
+        VALUES (execution_frequency), execution_scope =
+        VALUES (execution_scope), stored_procedure_interface =
+        VALUES (stored_procedure_interface), interface_input_parameters =
+        VALUES (interface_input_parameters), interface_output_parameters =
+        VALUES (interface_output_parameters), is_retry_supported =
+        VALUES (is_retry_supported), is_interrupt_possible =
+        VALUES (is_interrupt_possible), estimated_time =
+        VALUES (estimated_time), application_type =
+        VALUES (application_type), effective_date =
+        VALUES (effective_date), delivery_date =
+        VALUES (delivery_date), production_date =
+        VALUES (production_date), upstream_application =
+        VALUES (upstream_application)
+    </insert>
+
+    <select id="find" resultMap="NecessaryInfoResultMap">
+        SELECT job_id,
+               version,
+               central_project_number,
+               project_name,
+               requirement_sub_item,
+               application,
+               batch_category,
+               batch_session,
+               job_description,
+               prerequisite_job,
+               execution_frequency,
+               execution_scope,
+               stored_procedure_interface,
+               interface_input_parameters,
+               interface_output_parameters,
+               is_retry_supported,
+               is_interrupt_possible,
+               estimated_time,
+               application_type,
+               effective_date,
+               delivery_date,
+               production_date,
+               upstream_application
+        FROM necessary_info
+        WHERE job_id = #{jobId}
+    </select>
+
+</mapper>

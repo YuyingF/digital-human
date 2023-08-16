@@ -6,10 +6,9 @@ import java.util.Date;
 
 public class LogUtils {
 
-    public static void saveDialog(String content, String username) {
+    public static void saveDialog(String content, String jobId) {
         try {
-            String currentDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
-            String filePath = "./" + currentDate + "_" + username + ".txt";
+            String filePath = "src/main/resources/public/" + jobId + ".txt";
             File file = new File(filePath);
             if (!file.exists()) {
                 file.getParentFile().mkdirs();

@@ -1,5 +1,11 @@
 package com.icbc.digitalhuman.utils;
 
+import com.icbc.digitalhuman.entity.WorkCount;
+import com.icbc.digitalhuman.mapper.WorkCountMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -10,7 +16,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class DateUtils {
+
+    @Autowired
+    private WorkCountMapper workCountMapper;
+
+    public static DateUtils dateUtils;
+
+    @PostConstruct
+    public void init() {
+        dateUtils = this;
+        dateUtils.workCountMapper = this.workCountMapper;
+    }
 
     public static String chooseProductionDate() {
         Date currentDate = new Date();
@@ -63,6 +81,24 @@ public class DateUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String setJobId(String version) {
+        int count;
+        WorkCount existingWorkCount = dateUtils.workCountMapper.find(version);
+        if (existingWorkCount != null) {
+            dateUtils.workCountMapper.update(version);
+            count = existingWorkCount.getCount() + 1;
+        } else {
+            WorkCount newWorkCount = new WorkCount();
+            newWorkCount.setVersion(version);
+            newWorkCount.setCount(1);
+            dateUtils.workCountMapper.create(newWorkCount);
+            count = 1;
+        }
+        String countFormatted = (count < 10 ? "0" + count : String.valueOf(count));
+        String workId = "y" + version.substring(0, 4) + "m" + version.substring(4, 6) + "w" + countFormatted;
+        return workId;
     }
 
     public String setEffectiveDate(String productionDate) {

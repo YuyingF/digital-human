@@ -3,9 +3,7 @@ package com.icbc.digitalhuman.utils;
 import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.BatchWorkDef;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
-import com.icbc.digitalhuman.entity.WorkCount;
 import com.icbc.digitalhuman.mapper.ProcInitBpcByParamodeMapper;
-import com.icbc.digitalhuman.mapper.WorkCountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +21,6 @@ public class SqlUtils {
     @Autowired
     private ProcInitBpcByParamodeMapper procInitBpcByParamodeMapper;
 
-    @Autowired
-    private WorkCountMapper workCountMapper;
 
     //静态初始化
     public static SqlUtils sqlUtils;
@@ -36,7 +32,6 @@ public class SqlUtils {
     public void init() {
         sqlUtils = this;
         sqlUtils.procInitBpcByParamodeMapper = this.procInitBpcByParamodeMapper;
-        sqlUtils.workCountMapper = this.workCountMapper;
     }
 
     public BatchWorkDef infoToBatchWorkDef(InfoAndText infoAndText, String username) {
@@ -62,21 +57,8 @@ public class SqlUtils {
         batchWorkDef.setGroupCode(groupCode);
 
         String version = necessaryInfo.getVersion();
-        int count;
-        WorkCount existingWorkCount = sqlUtils.workCountMapper.find(version);
-        if (existingWorkCount != null) {
-            sqlUtils.workCountMapper.update(version);
-            count = existingWorkCount.getCount() + 1;
-        } else {
-            WorkCount newWorkCount = new WorkCount();
-            newWorkCount.setVersion(version);
-            newWorkCount.setCount(1);
-            sqlUtils.workCountMapper.create(newWorkCount);
-            count = 1;
-        }
-        String countFormatted = (count < 10 ? "0" + count : String.valueOf(count));
-        String workId = "y" + version.substring(0, 4) + "m" + version.substring(5, 6) + "w" + countFormatted;
-        batchWorkDef.setWorkId(workId);
+
+        batchWorkDef.setWorkId(necessaryInfo.getJobId());
 
         batchWorkDef.setWorkName(necessaryInfo.getProjectName());
 
@@ -97,7 +79,7 @@ public class SqlUtils {
 
         batchWorkDef.setWorkNowTime(necessaryInfo.getEffectiveDate());
 
-        batchWorkDef.setWorkSeq(count);
+        batchWorkDef.setWorkSeq(necessaryInfo.getJobId().substring(9, 11));
 
         // workInitType;
         // workInitProc;
@@ -130,8 +112,9 @@ public class SqlUtils {
         } else {
             sqlBuilder.append(insert(batchWorkDef, null)).append("\n");
         }
+        String filePath = "src/main/resources/public/" + infoAndText.getNecessaryInfo().getJobId() + ".sql";
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(batchWorkDef.getNotes()))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(sqlBuilder.toString());
             System.out.println("SQL script generated successfully.");
         } catch (IOException e) {
