@@ -265,12 +265,13 @@ body {
 
 #send-button {
   padding: 5px;
-  margin-right: 5px;
+  margin-right: 0.5%;
   /* margin-left: 10px; */
   border: 1.8px solid #515050;
   border-radius: 4px;
   box-shadow:1px 1px 5px #44b2ed;
   background-color:#44b2ed;
+  width: 90%;
   color: #fdfdfd;
   transition: background-color 0.3s, color 0.3s,border 0.3s;
 }
@@ -280,6 +281,28 @@ body {
   border: 1.8px solid #787777;
   color: #5e5d5d;
 }
+#send-button-container{
+  text-align: left;
+}
+#downloadBtn {
+  padding: 5px;
+  margin-right: 5px;
+  width: 8%;
+  /* margin-left: 10px; */
+  border: 1.8px solid #515050;
+  border-radius: 4px;
+  box-shadow:1px 1px 5px #7e7e7e;
+  background-color:#b0b0b0;
+  color: #4e4e4e;
+  transition: background-color 0.3s, color 0.3s,border 0.3s;
+}
+/* #downloadBtn:hover{
+  background-color:#70c7f6;
+  box-shadow:1px 1px 5px #70c7f6;
+  border: 1.8px solid #787777;
+  color: #5e5d5d;
+} */
+
 
 .box:hover {
   background-color: dark;

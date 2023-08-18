@@ -4,6 +4,7 @@ import com.icbc.digitalhuman.dto.InfoAndText;
 import com.icbc.digitalhuman.entity.NecessaryInfo;
 import com.icbc.digitalhuman.entity.UnnecessaryInfo;
 import com.icbc.digitalhuman.entity.User;
+import com.icbc.digitalhuman.udp.UdpClient;
 import com.icbc.digitalhuman.utils.*;
 import org.springframework.stereotype.Component;
 
@@ -204,12 +205,20 @@ public class WebSocket {
             infoAndText.getNecessaryInfo().setApplication(message);
             SqlUtils sqlUtils = new SqlUtils();
             sqlUtils.toSql(infoAndText, username);
-            sendMessage(User_ID, "%" + infoAndText.getNecessaryInfo().getJobId() + ".sql");
+            sendMessage(User_ID, "%" + "y2023m09w05.sql");
+//            sendMessage(User_ID, "%" + infoAndText.getNecessaryInfo().getJobId() + ".sql");
         }
         // 感谢服务
         else if (message.equals("#已提交反馈")) {
             reply = "已收到您的反馈，感谢！";
             sendMessage(User_ID, reply);
+        }
+        else{
+            UdpClient udpClient = new UdpClient();
+            String pythonResponse = udpClient.sendMessageAndGetResponse(message);
+            System.out.println("Received from Python: " + pythonResponse);
+
+            sendMessage(session.getId(), pythonResponse);
         }
         LogUtils.appendToDialog(dialog, "Bot", reply);
     }

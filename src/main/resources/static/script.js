@@ -63,6 +63,7 @@ function connectWebSocket() {
             yesButton.textContent = '是的，我需要修改';
             yesButton.onclick = function () {
                 sendMessage('是');
+                addMessageToChat('是的，我需要修改', 'right');
             };
 
             // 创建“否”按钮
@@ -71,6 +72,7 @@ function connectWebSocket() {
             noButton.textContent = '不必，表格内容无误';
             noButton.onclick = function () {
                 sendMessage('否');
+                addMessageToChat('不必，表格内容无误', 'right');
             };
 
             // 将按钮添加到容器
@@ -98,6 +100,34 @@ function connectWebSocket() {
             }
             messageContainer.appendChild(buttonContainer);
             messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+        else if (message.startsWith('%')) {
+            message = message.substring(1);
+            // message = "N.docx";
+            var downloadButton = document.getElementById("downloadBtn"); // 获取按钮元素
+            downloadButton.style.backgroundColor = "#44b2ed";
+            downloadButton.style.color = "#fdfdfd"
+
+            downloadButton.addEventListener("mouseover", function () {
+                downloadButton.style.backgroundColor = "#70c7f6"; // 鼠标悬停时的背景颜色
+                downloadButton.style.color = "#5e5d5d"
+            });
+
+            downloadButton.addEventListener("mouseout", function () {
+                downloadButton.style.backgroundColor = "#44b2ed"; // 鼠标移出时恢复普通状态的背景颜色
+                downloadButton.style.color = "#fdfdfd"
+            });
+
+            document.getElementById("downloadBtn").addEventListener("click", function () {
+                var link = document.createElement("a");
+                link.href = "http://localhost:8080/" + message;
+                link.download = "SQLcode.sql";
+                link.target = "_blank";
+                document.getElementById("downloadBtn").appendChild(link);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         }
         else if (message.startsWith('$')) {
             var dates = message.split('$');
@@ -129,8 +159,35 @@ function connectWebSocket() {
             messageContainer.appendChild(tableContainer);
             messageContainer.scrollTop = messageContainer.scrollHeight;
         }
+        else if (message.startsWith("新增还是修改")) {
+            var buttonContainer = document.createElement('div');
+            buttonContainer.className = 'date-button-container';
+
+            // 创建“是”按钮
+            var newButton = document.createElement('button');
+            newButton.className = 'date-button';
+            newButton.textContent = '新增';
+            newButton.onclick = function () {
+                sendMessage('新增');
+            };
+
+            // 创建“否”按钮
+            var addButton = document.createElement('button');
+            addButton.className = 'date-button';
+            addButton.textContent = '修改';
+            addButton.onclick = function () {
+                sendMessage('修改');
+            };
+
+            // 将按钮添加到容器
+            buttonContainer.appendChild(newButton);
+            buttonContainer.appendChild(addButton);
+
+            // 将按钮容器添加到聊天界面
+            messageContainer.appendChild(buttonContainer);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
         else {
-            // 否则按照原本的气泡效果处理
             addMessageToChat(message, 'left');
         }
     };
